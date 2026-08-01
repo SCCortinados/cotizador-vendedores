@@ -45,10 +45,6 @@ document.addEventListener("DOMContentLoaded", () => {
         font-size: 18px;
         font-weight: bold;
         cursor: pointer;
-        transition: background 0.3s;
-      }
-      .btn-calcular:hover {
-        background-color: #219150;
       }
       .resultado {
         margin-top: 20px;
@@ -107,7 +103,6 @@ function calcularCotizacion() {
     return;
   }
 
-  // Precios base por m2 según tipo de tela
   let precioM2 = 0;
   if (tela === "blackout") precioM2 = 25000;
   else if (tela === "sunscreen") precioM2 = 28000;
