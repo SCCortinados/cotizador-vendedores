@@ -3,13 +3,480 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cotizador</title>
+  <title>Cotizador Profesional de Cortinas</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --success: #16a34a;
+      --success-hover: #15803d;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --border: #e2e8f0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 20px 12px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 24px;
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+      color: white;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      margin-bottom: 6px;
+    }
+
+    header p {
+      color: #94a3b8;
+      font-size: 0.95rem;
+    }
+
+    .grid-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    @media (min-width: 768px) {
+      .grid-layout {
+        grid-template-columns: 1.2fr 1fr;
+      }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 14px;
+      padding: 20px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #0f172a;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #475569;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      background-color: #fff;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .checkbox-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .checkbox-item input {
+      width: auto;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.2s;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-whatsapp {
+      background-color: var(--success);
+      color: white;
+      margin-top: 10px;
+    }
+
+    .btn-whatsapp:hover {
+      background-color: var(--success-hover);
+    }
+
+    .btn-secondary {
+      background-color: #f1f5f9;
+      color: #334155;
+      margin-top: 8px;
+    }
+
+    .btn-secondary:hover {
+      background-color: #e2e8f0;
+    }
+
+    .items-list {
+      margin-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 280px;
+      overflow-y: auto;
+    }
+
+    .item-card {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      padding: 12px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .item-details h4 {
+      font-size: 0.9rem;
+      color: #0f172a;
+    }
+
+    .item-details p {
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+
+    .item-price {
+      font-weight: 700;
+      color: var(--primary);
+      font-size: 0.95rem;
+      text-align: right;
+    }
+
+    .btn-delete {
+      background: none;
+      border: none;
+      color: #ef4444;
+      cursor: pointer;
+      margin-left: 10px;
+      font-size: 1rem;
+    }
+
+    .totals-box {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 2px dashed var(--border);
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #0f172a;
+      margin-top: 8px;
+    }
+  </style>
 </head>
 <body>
-  <h1>Mi Cotizador</h1>
-  <div id="app">Cargando datos...</div>
 
-  <!-- Esta línea conecta con tu código JS -->
-  <script src="codigo.js"></script>
+<div class="container">
+  <header>
+    <h1><i class="fa-solid fa-calculator"></i> Cotizador de Cortinas</h1>
+    <p>Sistema de cálculo de presupuestos para vendedores</p>
+  </header>
+
+  <div class="grid-layout">
+    <!-- FORMULARIO DE INGRESO -->
+    <div class="card">
+      <div class="card-title">
+        <i class="fa-solid fa-ruler-combined"></i> Configurar Cortina
+      </div>
+
+      <div class="form-group">
+        <label for="cliente">Nombre del Cliente / Ref:</label>
+        <input type="text" id="cliente" placeholder="Ej: Juan Pérez - Living">
+      </div>
+
+      <div class="form-group">
+        <label for="tela">Tipo de Cortina / Tela:</label>
+        <select id="tela">
+          <option value="25000">Roller Blackout Standard ($25.000 / m²)</option>
+          <option value="32000">Roller Sunscreen 5% Premium ($32.000 / m²)</option>
+          <option value="36000">Roller Sunscreen 1% ($36.000 / m²)</option>
+          <option value="55000">Sistema Doble (Blackout + Screen) ($55.000 / m²)</option>
+          <option value="28000">Cortina Tradicional Gasa Lino ($28.000 / m²)</option>
+          <option value="34000">Bandas Verticales 89mm ($34.000 / m²)</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="ancho">Ancho (m):</label>
+          <input type="number" id="ancho" step="0.01" placeholder="1.50">
+        </div>
+        <div class="form-group">
+          <label for="alto">Alto (m):</label>
+          <input type="number" id="alto" step="0.01" placeholder="2.00">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="mecanismo">Mecanismo / Comando:</label>
+          <select id="mecanismo">
+            <option value="0">Cadena Plástica (Incluida)</option>
+            <option value="3500">Cadena Metálica (+$3.500)</option>
+            <option value="45000">Motorizado Control Remoto (+$45.000)</option>
+            <option value="65000">Motorizado Smart Wi-Fi (+$65.000)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="cantidad">Cantidad:</label>
+          <input type="number" id="cantidad" value="1" min="1">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Adicionales Opcionales:</label>
+        <div class="checkbox-group">
+          <label class="checkbox-item"><input type="checkbox" id="zocalo" value="4500"> Zócalo Expuesto (+$4.500/m)</label>
+          <label class="checkbox-item"><input type="checkbox" id="soporteDoble" value="8000"> Soporte Doble (+$8.000)</label>
+          <label class="checkbox-item"><input type="checkbox" id="guias" value="12000"> Guías Laterales (+$12.000)</label>
+          <label class="checkbox-item"><input type="checkbox" id="instalacion" value="15000"> Instalación (+$15.000)</label>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" onclick="agregarItem()">
+        <i class="fa-solid fa-plus"></i> Agregar Cortina al Presupuesto
+      </button>
+    </div>
+
+    <!-- RESUMEN Y PRESUPUESTO -->
+    <div class="card">
+      <div class="card-title">
+        <i class="fa-solid fa-file-invoice-dollar"></i> Resumen de Cotización
+      </div>
+
+      <div id="itemsContainer" class="items-list">
+        <p style="text-align: center; color: #94a3b8; padding: 20px;">No hay cortinas agregadas aún.</p>
+      </div>
+
+      <div class="totals-box">
+        <div class="form-group" style="margin-bottom: 8px;">
+          <label for="descuento">Descuento Especial (%):</label>
+          <input type="number" id="descuento" value="0" min="0" max="100" onchange="calcularTotales()">
+        </div>
+
+        <div class="total-row">
+          <span>Total:</span>
+          <span id="totalFinal">$0</span>
+        </div>
+      </div>
+
+      <button class="btn btn-whatsapp" onclick="enviarWhatsApp()">
+        <i class="fa-fab fa-whatsapp"></i> Enviar por WhatsApp
+      </button>
+
+      <button class="btn btn-secondary" onclick="limpiarTodo()">
+        <i class="fa-solid fa-rotate-left"></i> Nueva Cotización
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let listaItems = [];
+
+  function agregarItem() {
+    const cliente = document.getElementById('cliente').value || 'Cliente';
+    const selectTela = document.getElementById('tela');
+    const precioM2 = parseFloat(selectTela.value);
+    const nombreTela = selectTela.options[selectTela.selectedIndex].text.split(' ($')[0];
+
+    const ancho = parseFloat(document.getElementById('ancho').value);
+    const alto = parseFloat(document.getElementById('alto').value);
+    const cantidad = parseInt(document.getElementById('cantidad').value) || 1;
+
+    if (!ancho || !alto || ancho <= 0 || alto <= 0) {
+      alert("Por favor ingresá valores de Ancho y Alto válidos.");
+      return;
+    }
+
+    // Cálculo de m² con mínimo de 1.50 m² por cortina
+    let m2Real = ancho * alto;
+    let m2Calculo = Math.max(m2Real, 1.50);
+
+    let subtotalTela = m2Calculo * precioM2;
+
+    // Adicional de mecanismo
+    const precioMecanismo = parseFloat(document.getElementById('mecanismo').value);
+
+    // Adicionales checkboxes
+    let precioAdicionales = 0;
+    if (document.getElementById('zocalo').checked) precioAdicionales += (parseFloat(document.getElementById('zocalo').value) * ancho);
+    if (document.getElementById('soporteDoble').checked) precioAdicionales += parseFloat(document.getElementById('soporteDoble').value);
+    if (document.getElementById('guias').checked) precioAdicionales += parseFloat(document.getElementById('guias').value);
+    if (document.getElementById('instalacion').checked) precioAdicionales += parseFloat(document.getElementById('instalacion').value);
+
+    let precioUnitario = subtotalTela + precioMecanismo + precioAdicionales;
+    let precioTotalItem = precioUnitario * cantidad;
+
+    const item = {
+      id: Date.now(),
+      nombreTela,
+      ancho,
+      alto,
+      cantidad,
+      m2Calculo,
+      precioTotalItem
+    };
+
+    listaItems.push(item);
+    renderizarItems();
+    calcularTotales();
+
+    // Resetear campos de medida
+    document.getElementById('ancho').value = '';
+    document.getElementById('alto').value = '';
+  }
+
+  function renderizarItems() {
+    const container = document.getElementById('itemsContainer');
+    if (listaItems.length === 0) {
+      container.innerHTML = `<p style="text-align: center; color: #94a3b8; padding: 20px;">No hay cortinas agregadas aún.</p>`;
+      return;
+    }
+
+    container.innerHTML = listaItems.map(item => `
+      <div class="item-card">
+        <div class="item-details">
+          <h4>${item.cantidad}x ${item.nombreTela}</h4>
+          <p>${item.ancho.toFixed(2)}m x ${item.alto.toFixed(2)}m (${item.m2Calculo.toFixed(2)} m² c/u)</p>
+        </div>
+        <div style="display: flex; align-items: center;">
+          <div class="item-price">$${item.precioTotalItem.toLocaleString('es-AR')}</div>
+          <button class="btn-delete" onclick="eliminarItem(${item.id})"><i class="fa-solid fa-trash"></i></button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function eliminarItem(id) {
+    listaItems = listaItems.filter(item => item.id !== id);
+    renderizarItems();
+    calcularTotales();
+  }
+
+  function calcularTotales() {
+    let subtotal = listaItems.reduce((acc, item) => acc + item.precioTotalItem, 0);
+    let descPct = parseFloat(document.getElementById('descuento').value) || 0;
+    let total = subtotal * (1 - (descPct / 100));
+
+    document.getElementById('totalFinal').innerText = '$' + Math.round(total).toLocaleString('es-AR');
+  }
+
+  function enviarWhatsApp() {
+    if (listaItems.length === 0) {
+      alert("Agregá al menos una cortina antes de generar el mensaje.");
+      return;
+    }
+
+    const cliente = document.getElementById('cliente').value || 'Cliente';
+    let totalFinal = document.getElementById('totalFinal').innerText;
+
+    let mensaje = `Hola *${cliente}*, adjunto la cotización de tus cortinas:\n\n`;
+
+    listaItems.forEach((item, index) => {
+      mensaje += `*Cortina ${index + 1}:* ${item.nombreTela}\n`;
+      mensaje += `📐 Medidas: ${item.ancho.toFixed(2)}m (ancho) x ${item.alto.toFixed(2)}m (alto)\n`;
+      mensaje += `🔢 Cantidad: ${item.cantidad}\n`;
+      mensaje += `💰 Subtotal: $${item.precioTotalItem.toLocaleString('es-AR')}\n\n`;
+    });
+
+    mensaje += `*TOTAL ESTIMADO: ${totalFinal}*\n\n`;
+    mensaje += `Quedamos a disposición por cualquier consulta. ¡Saludos!`;
+
+    const url = `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
+    window.open(url, '_blank');
+  }
+
+  function limpiarTodo() {
+    listaItems = [];
+    document.getElementById('cliente').value = '';
+    document.getElementById('ancho').value = '';
+    document.getElementById('alto').value = '';
+    document.getElementById('descuento').value = '0';
+    renderizarItems();
+    calcularTotales();
+  }
+</script>
+
 </body>
 </html>
