@@ -1,245 +1,121 @@
-const ENLACE_COTIZADOR =
-  "https://docs.google.com/spreadsheets/d/1JJ0kSoKUcvLyBJldCfnGcVzhJozHOsb5pg8JpGkPO_Q/edit?usp=sharing";
+document.addEventListener("DOMContentLoaded", () => {
+  const app = document.getElementById("app");
 
-const NOMBRE_PESTAÑA = "COTIZADOR";
-
-function doGet(e) {
-  if (e && e.parameter.page === "informacion") {
-    const informacion = HtmlService.createTemplateFromFile("informacion");
-
-    informacion.codigoCliente = String(
-      e.parameter.cliente || ""
-    ).trim().toUpperCase();
-
-    return informacion.evaluate()
-      .setTitle("Información importante");
-  }
-
-  const plantilla = HtmlService.createTemplateFromFile("Index");
-
-  plantilla.codigoCliente = String(
-    e && e.parameter.cliente ? e.parameter.cliente : ""
-  ).trim().toUpperCase();
-
-  return plantilla.evaluate()
-    .setTitle("Cotizador SC CORTINADOS");
-}
-function calcularPrecio(mecanismo, ancho, alto, dobleSistema, codigoCliente) {
-  const bloqueo = LockService.getScriptLock();
-  bloqueo.waitLock(30000);
-
-  try {
-    const archivo = SpreadsheetApp.openByUrl(ENLACE_COTIZADOR);
-    const hoja = archivo.getSheetByName(NOMBRE_PESTAÑA);
-
-    if (!hoja) {
-      throw new Error("No se encontró la pestaña COTIZADOR.");
-    }
-const codigo = String(codigoCliente || "").trim().toUpperCase();
-
-if (!codigo) {
-  throw new Error("El enlace del revendedor no es válido.");
-}
-
-const hojaRevendedores = archivo.getSheetByName("REVENDEDORES");
-
-if (!hojaRevendedores) {
-  throw new Error('No se encontró la pestaña "REVENDEDORES".');
-}
-
-const ultimaFila = hojaRevendedores.getLastRow();
-
-const codigos = ultimaFila >= 2
-  ? hojaRevendedores
-      .getRange(2, 1, ultimaFila - 1, 1)
-      .getDisplayValues()
-      .flat()
-      .map(function(valor) {
-        return String(valor).trim().toUpperCase();
-      })
-  : [];
-
-if (codigos.indexOf(codigo) === -1) {
-  throw new Error("El código del revendedor no existe.");
-}
-
-hoja.getRange("A3").setValue(codigo);
-    const anchoNumero = Number(String(ancho).replace(",", "."));
-    const altoNumero = Number(String(alto).replace(",", "."));
-
-    if (!mecanismo || isNaN(anchoNumero) || isNaN(altoNumero)) {
-      throw new Error("Completá mecanismo, ancho y alto.");
-    }
-
-    // Carga las medidas en la planilla.
-    hoja.getRange("D3").setValue(anchoNumero);
-    hoja.getRange("E3").setValue(altoNumero);
-
-    // Calcula el primer mecanismo elegido.
-    hoja.getRange("B3").setValue(mecanismo);
-    hoja.getRange("C3").setValue("NO");
-
-    SpreadsheetApp.flush();
-
-    const precioPrimero = Number(hoja.getRange("U3").getValue());
-
-    if (isNaN(precioPrimero)) {
-      throw new Error("No se pudo obtener el precio final.");
-    }
-
-    let precioFinal = precioPrimero;
-
-    if (dobleSistema === true) {
-      let segundoMecanismo;
-
-      if (mecanismo === "32 PLUS") {
-        segundoMecanismo = "32 PREMIUM";
-      } else if (mecanismo === "38 PLUS") {
-        segundoMecanismo = "38 PREMIUM";
-      } else if (mecanismo === "32 PREMIUM") {
-        segundoMecanismo = "32 PREMIUM";
-      } else if (mecanismo === "38 PREMIUM") {
-        segundoMecanismo = "38 PREMIUM";
-      } else {
-        throw new Error("No se pudo determinar el segundo mecanismo.");
+  app.innerHTML = `
+    <style>
+      .cotizador-container {
+        font-family: Arial, sans-serif;
+        max-width: 500px;
+        margin: 20px auto;
+        padding: 20px;
+        border: 1px solid #e0e0e0;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        background: #ffffff;
       }
-
-      // Calcula el segundo mecanismo con las mismas medidas.
-      hoja.getRange("B3").setValue(segundoMecanismo);
-      hoja.getRange("C3").setValue("NO");
-
-      SpreadsheetApp.flush();
-
-      const precioSegundo = Number(hoja.getRange("U3").getValue());
-
-      if (isNaN(precioSegundo)) {
-        throw new Error("No se pudo obtener el precio del segundo mecanismo.");
+      .cotizador-container h2 {
+        text-align: center;
+        color: #2c3e50;
+        margin-top: 0;
       }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      .form-group label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: #333;
+      }
+      .form-group input, .form-group select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        box-sizing: border-box;
+        font-size: 16px;
+      }
+      .btn-calcular {
+        width: 100%;
+        padding: 12px;
+        background-color: #27ae60;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.3s;
+      }
+      .btn-calcular:hover {
+        background-color: #219150;
+      }
+      .resultado {
+        margin-top: 20px;
+        padding: 15px;
+        background: #f4f6f7;
+        border-radius: 6px;
+        text-align: center;
+      }
+      .resultado h3 {
+        margin: 0;
+        color: #2c3e50;
+      }
+    </style>
 
-      precioFinal = precioPrimero + precioSegundo + 12500;
+    <div class="cotizador-container">
+      <h2>Cotizador de Cortinas</h2>
+      
+      <div class="form-group">
+        <label for="ancho">Ancho (metros):</label>
+        <input type="number" id="ancho" step="0.01" placeholder="Ej: 1.50">
+      </div>
 
-      // Vuelve a dejar visible el mecanismo elegido originalmente.
-      hoja.getRange("B3").setValue(mecanismo);
-      hoja.getRange("C3").setValue("SI");
+      <div class="form-group">
+        <label for="alto">Alto (metros):</label>
+        <input type="number" id="alto" step="0.01" placeholder="Ej: 2.00">
+      </div>
 
-      SpreadsheetApp.flush();
-    } else {
-      hoja.getRange("C3").setValue("NO");
-    }
+      <div class="form-group">
+        <label for="tela">Tipo de Tela:</label>
+        <select id="tela">
+          <option value="blackout">Blackout</option>
+          <option value="sunscreen">Sunscreen 5%</option>
+          <option value="doble">Sistema Doble (Blackout + Screen)</option>
+        </select>
+      </div>
 
-    return precioFinal.toLocaleString("es-AR", {
-      style: "currency",
-      currency: "ARS",
-      maximumFractionDigits: 0
-    });
+      <button class="btn-calcular" onclick="calcularCotizacion()">Calcular Cotización</button>
 
-  } finally {
-    bloqueo.releaseLock();
+      <div class="resultado" id="resultadoBox" style="display:none;">
+        <p>Total estimado:</p>
+        <h3 id="precioFinal">$0</h3>
+      </div>
+    </div>
+  `;
+});
+
+function calcularCotizacion() {
+  const ancho = parseFloat(document.getElementById("ancho").value);
+  const alto = parseFloat(document.getElementById("alto").value);
+  const tela = document.getElementById("tela").value;
+  const resultadoBox = document.getElementById("resultadoBox");
+  const precioFinal = document.getElementById("precioFinal");
+
+  if (!ancho || !alto || ancho <= 0 || alto <= 0) {
+    alert("Por favor ingresá un ancho y alto válidos.");
+    return;
   }
-}
-function guardarPedido(vendedor, productos) {
-  const bloqueo = LockService.getScriptLock();
-  bloqueo.waitLock(30000);
 
-  try {
-    if (!vendedor || !String(vendedor).trim()) {
-      throw new Error("Falta el nombre del vendedor.");
-    }
+  // Precios base por m2 según tipo de tela
+  let precioM2 = 0;
+  if (tela === "blackout") precioM2 = 25000;
+  else if (tela === "sunscreen") precioM2 = 28000;
+  else if (tela === "doble") precioM2 = 50000;
 
-    if (!Array.isArray(productos) || productos.length === 0) {
-      throw new Error("El pedido no tiene productos.");
-    }
+  const m2 = ancho * alto;
+  const total = Math.round(m2 * precioM2);
 
-    const archivo = SpreadsheetApp.openByUrl(ENLACE_COTIZADOR);
-    const hojaPedidos = archivo.getSheetByName("PEDIDOS");
-
-    if (!hojaPedidos) {
-      throw new Error('No se encontró la pestaña "PEDIDOS".');
-    }
-
-    const ahora = new Date();
-
-    const numeroPedido = Utilities.formatDate(
-      ahora,
-      Session.getScriptTimeZone(),
-      "yyyyMMdd-HHmmss"
-    );
-
-    const filas = productos.map(function(producto) {
-      const mecanismoCompleto = String(producto.mecanismo || "");
-      const mecanismo = mecanismoCompleto.indexOf("38") === 0 ? "38" : "32";
-
-      return [
-        numeroPedido,
-        ahora,
-        String(vendedor).trim(),
-        mecanismo,
-        producto.ancho || "",
-        producto.alto || "",
-        producto.tela || "",
-        producto.color || "",
-        producto.doble || "Simple",
-        Number(producto.cantidad) || 1,
-        producto.observaciones || "",
-        producto.precio || "",
-        "PENDIENTE"
-      ];
-    });
-
-    hojaPedidos
-      .getRange(hojaPedidos.getLastRow() + 1, 1, filas.length, 13)
-      .setValues(filas);
-
-    return numeroPedido;
-
-  } finally {
-    bloqueo.releaseLock();
-  }
-}
-function doPost(e) {
-  try {
-    const datos = JSON.parse(e.postData.contents);
-
-    let resultado;
-
-    switch (datos.accion) {
-
-      case "calcularPrecio":
-        resultado = calcularPrecio(
-          datos.mecanismo,
-          datos.ancho,
-          datos.alto,
-          datos.dobleSistema,
-          datos.codigoCliente
-        );
-        break;
-
-      case "guardarPedido":
-        resultado = guardarPedido(
-          datos.vendedor,
-          datos.productos
-        );
-        break;
-
-      default:
-        throw new Error("Acción no válida.");
-    }
-
-    return ContentService
-      .createTextOutput(JSON.stringify({
-        ok: true,
-        resultado: resultado
-      }))
-      .setMimeType(ContentService.MimeType.JSON);
-
-  } catch (err) {
-
-    return ContentService
-      .createTextOutput(JSON.stringify({
-        ok: false,
-        error: err.message
-      }))
-      .setMimeType(ContentService.MimeType.JSON);
-
-  }
+  precioFinal.innerText = "$" + total.toLocaleString("es-AR");
+  resultadoBox.style.display = "block";
 }
