@@ -1,95 +1,795 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
+  <base target="_top">
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cotizador de Cortinas</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cotizador VENDEDORES - SC Cortinados</title>
+
   <style>
-    * {
+    .logo {
+      display: block;
+      width: 220px;
+      max-width: 80%;
+      margin: 0 auto 20px;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f1ec;
       margin: 0;
-      padding: 0;
+      padding: 24px;
+    }
+
+    .contenedor {
+      max-width: 480px;
+      margin: 30px auto;
+      background: white;
+      padding: 28px;
+      border-radius: 14px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 0;
+      font-size: 25px;
+    }
+
+    h2 {
+      margin-top: 24px;
+    }
+
+    label {
+      display: block;
+      margin-top: 18px;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    select,
+    input[type="text"] {
       box-sizing: border-box;
-    }
-    html, body {
       width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background-color: #f8fafc;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      padding: 12px;
+      font-size: 17px;
+      border: 1px solid #aaa;
+      border-radius: 7px;
     }
-    .app-container {
+
+    button {
       width: 100%;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-    }
-    iframe {
-      width: 100%;
-      height: 100%;
+      margin-top: 24px;
+      padding: 14px;
       border: none;
-      flex-grow: 1;
+      border-radius: 7px;
+      background: #222;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
     }
-    .loading-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: #ffffff;
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    #resultado {
+      display: none;
+      margin-top: 24px;
+      padding: 18px;
+      border-radius: 8px;
+      background: #eee8df;
+      text-align: center;
+      font-size: 25px;
+      font-weight: bold;
+    }
+
+    #error {
+      display: none;
+      margin-top: 18px;
+      padding: 12px;
+      border-radius: 7px;
+      background: #ffe1e1;
+      color: #8b0000;
+    }
+
+    #segundaCortina {
+      display: none;
+      margin-top: 24px;
+      padding: 18px;
+      border: 1px solid #d2cbc1;
+      border-radius: 9px;
+      background: #faf8f5;
+    }
+
+    #datosPedido {
+      display: none;
+      margin-top: 20px;
+    }
+
+    #resumenPedido {
+      display: none;
+      margin-top: 24px;
+    }
+
+    .producto-pedido {
+      border: 1px solid #ccc;
+      padding: 12px;
+      margin-bottom: 12px;
+      border-radius: 8px;
+      line-height: 1.5;
+    }
+
+    .doble-sistema {
       display: flex;
-      flex-direction: column;
-      justify-content: center;
       align-items: center;
-      z-index: 10;
-      transition: opacity 0.4s ease, visibility 0.4s ease;
+      margin-top: 16px;
     }
-    .loading-overlay.hidden {
-      opacity: 0;
-      visibility: hidden;
+
+    .doble-sistema input {
+      margin-right: 8px;
     }
-    .spinner {
-      width: 44px;
-      height: 44px;
-      border: 4px solid #e2e8f0;
-      border-top: 4px solid #4f46e5;
-      border-radius: 50%;
-      animation: spin 0.9s linear infinite;
-      margin-bottom: 16px;
+
+    .doble-sistema label {
+      margin: 0;
     }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    .loading-text {
-      color: #334155;
-      font-size: 15px;
-      font-weight: 500;
+
+    #linkTabla {
+      display: none;
+      margin-top: 10px;
+      font-size: 14px;
     }
   </style>
 </head>
-<body>
 
-  <div class="app-container">
-    <div id="loadingOverlay" class="loading-overlay">
-      <div class="spinner"></div>
-      <div class="loading-text">Cargando tu cotizador de Google Script...</div>
+<body>
+  <div class="contenedor">
+
+    <img
+      src="https://lh3.googleusercontent.com/d/1zPHiAc55Ob8hGopaZS_-q_RR11smrSve"
+      alt="SC Cortinados"
+      class="logo"
+    >
+
+    <h1>Cotizador VENDEDORES</h1>
+
+    <button type="button" onclick="abrirInformacion()">
+      ℹ️ Información importante
+    </button>
+
+    <label for="ancho">Ancho final</label>
+    <input
+      id="ancho"
+      type="text"
+      inputmode="decimal"
+      placeholder="Ejemplo: 1,80"
+      oninput="invalidarCalculo()"
+    >
+
+    <label for="alto">Alto final</label>
+    <input
+      id="alto"
+      type="text"
+      inputmode="decimal"
+      placeholder="Ejemplo: 2,10"
+      oninput="invalidarCalculo()"
+    >
+
+    <label for="tipoTela">Tipo de tela</label>
+    <select id="tipoTela" onchange="actualizarOpciones()">
+      <option value="">Seleccionar</option>
+      <option value="BLACKOUT_PLUS">Blackout Plus</option>
+      <option value="BLACKOUT_PREMIUM">Blackout Premium</option>
+      <option value="SUNSCREEN_PREMIUM">Sunscreen Premium</option>
+      <option value="TRASLUCIDA">Translúcida</option>
+    </select>
+
+    <label for="mecanismo">Mecanismo</label>
+    <select
+      id="mecanismo"
+      onchange="mostrarTabla(); mostrarSegundaCortina(); invalidarCalculo();"
+    >
+      <option value="">Seleccionar</option>
+    </select>
+
+    <div class="doble-sistema">
+      <input
+        type="checkbox"
+        id="dobleSistema"
+        onchange="mostrarSegundaCortina(); invalidarCalculo();"
+      >
+      <label for="dobleSistema">Doble sistema</label>
     </div>
 
-    <iframe 
-      id="scriptFrame" 
-      src="https://script.google.com/macros/s/AKfycbyAzVMQumeLklJArp6vnzTXD0MKdu5TuAkZNgjQU0vPk8Re5Bf4Lvya7AEHGbzWkadGSA/exec" 
-      allow="geolocation; microphone; camera"
-      onload="ocultarCarga()"
-    ></iframe>
+    <a
+      id="linkTabla"
+      href="#"
+      onclick="abrirTabla(); return false;"
+      style="display:inline-block;"
+    >
+      ¿Qué mecanismo corresponde? Ver tabla
+    </a>
+
+    <div id="segundaCortina">
+      <h2>Segunda cortina</h2>
+
+      <label for="tipoTela2">Tipo de tela</label>
+      <select id="tipoTela2" onchange="actualizarSegundaCortina()">
+        <option value="">Seleccionar</option>
+        <option value="SUNSCREEN_PREMIUM">Sunscreen Premium</option>
+        <option value="TRASLUCIDA">Translúcida</option>
+      </select>
+
+      <label for="color2">Color</label>
+      <select id="color2">
+        <option value="">Seleccionar</option>
+      </select>
+
+      <label for="mecanismo2">Mecanismo</label>
+      <select id="mecanismo2">
+        <option value="">Seleccionar</option>
+        <option value="32 PREMIUM">32 Premium</option>
+        <option value="38 PREMIUM">38 Premium</option>
+      </select>
+    </div>
+
+    <button id="boton" type="button" onclick="calcular()">
+      Calcular precio
+    </button>
+
+    <div id="resultado"></div>
+
+    <div id="datosPedido">
+
+      <label for="clienteObra">Cliente / Obra</label>
+      <input
+        id="clienteObra"
+        type="text"
+        placeholder="Ej.: Casa González"
+      >
+
+      <label for="color">Color</label>
+      <select id="color">
+        <option value="">Seleccionar</option>
+      </select>
+
+      <label for="caida">Caída</label>
+      <select id="caida">
+        <option value="">Seleccionar</option>
+        <option value="TRASERA">Trasera</option>
+        <option value="DELANTERA">Delantera</option>
+      </select>
+
+      <label for="cadena">Cadena</label>
+      <select id="cadena">
+        <option value="">Seleccionar</option>
+        <option value="DERECHA">Derecha</option>
+        <option value="IZQUIERDA">Izquierda</option>
+      </select>
+
+      <button
+        id="agregarPedido"
+        type="button"
+        onclick="agregarAlPedido()"
+      >
+        Agregar al pedido
+      </button>
+    </div>
+
+    <div id="resumenPedido">
+      <h2>Pedido</h2>
+
+      <div id="listaPedido"></div>
+
+      <button
+        id="confirmarPedido"
+        type="button"
+        onclick="confirmarPedido()"
+      >
+        Confirmar pedido
+      </button>
+    </div>
+
+    <div id="error"></div>
+
+    <div id="modalInformacion" style="
+      display:none;
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      background:white;
+      z-index:9999;
+      overflow:auto;
+      box-sizing:border-box;
+      padding:24px;
+    ">
+      <h1>ℹ️ Información importante</h1>
+
+      <ul>
+        <li>En la calidad <b>Plus (3 capas)</b> trabajamos con <b>Blackout blanco</b> hasta <b>2,00 m</b> de ancho.</li>
+        <li>En la calidad <b>Premium (4 capas)</b> trabajamos con <b>Blackout blanco, natural, beige y gris</b>.</li>
+        <li>Para cotizaciones con <b>mecanismo de 50 mm</b>, consultar.</li>
+        <li>Para cotizaciones con <b>mecanismo de color negro</b>, consultar.</li>
+        <li>Todos los precios incluyen <b>mecanismos blancos de primera calidad, terminación enfundada y contrapeso de cadena.</b></li>
+      </ul>
+
+      <button type="button" onclick="cerrarInformacion()">
+        ← Volver al cotizador
+      </button>
+    </div>
+
   </div>
 
   <script>
-    function ocultarCarga() {
-      const overlay = document.getElementById('loadingOverlay');
-      if (overlay) {
-        overlay.classList.add('hidden');
+    // Manejo seguro del código de cliente en GitHub Pages vs Google Script
+    let CODIGO_CLIENTE = "<?= codigoCliente ?>";
+    if (CODIGO_CLIENTE.includes("<?")) {
+      CODIGO_CLIENTE = new URLSearchParams(window.location.search).get("cliente") || "GENERAL";
+    }
+
+    const URL_WEBAPP =
+      "https://script.google.com/macros/s/AKfycbyAzVMQumeLklJArp6vnzTXD0MKdu5TuAkZNgjQU0vPk8Re5Bf4Lvya7AEHGbzWkadGSA/exec";
+
+    // PUENTE DE COMPATIBILIDAD (Polyfill para google.script.run fuera de Google)
+    if (typeof google === "undefined" || !google.script || !google.script.run) {
+      window.google = window.google || {};
+      window.google.script = window.google.script || {};
+
+      window.google.script.run = (function() {
+        let successCb = function() {};
+        let failureCb = function() {};
+
+        function executeCall(actionName, argsArray) {
+          const params = new URLSearchParams();
+          params.append("action", actionName);
+          params.append("data", JSON.stringify(argsArray));
+          params.append("cliente", CODIGO_CLIENTE);
+
+          fetch(URL_WEBAPP + "?" + params.toString(), {
+            method: "GET",
+            mode: "cors"
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data && data.error) failureCb(new Error(data.error));
+            else if (data && data.precio !== undefined) successCb(data.precio);
+            else successCb(data);
+          })
+          .catch(err => {
+            // Intento alternativo por POST si GET falla por CORS
+            fetch(URL_WEBAPP, {
+              method: "POST",
+              headers: { "Content-Type": "text/plain;charset=utf-8" },
+              body: JSON.stringify({ action: actionName, args: argsArray, codigoCliente: CODIGO_CLIENTE })
+            })
+            .then(res => res.text())
+            .then(text => {
+              try {
+                const parsed = JSON.parse(text);
+                if (parsed.error) failureCb(new Error(parsed.error));
+                else successCb(parsed.result !== undefined ? parsed.result : parsed);
+              } catch(e) {
+                successCb(text);
+              }
+            })
+            .catch(postErr => {
+              failureCb(postErr || new Error("No se pudo conectar con el servidor de Google Script."));
+            });
+          });
+        }
+
+        const runner = {
+          withSuccessHandler: function(fn) {
+            successCb = fn;
+            return runner;
+          },
+          withFailureHandler: function(fn) {
+            failureCb = fn;
+            return runner;
+          },
+          calcularPrecio: function(mecanismo, ancho, alto, dobleSistema, cliente) {
+            executeCall("calcularPrecio", [mecanismo, ancho, alto, dobleSistema, cliente]);
+          },
+          guardarPedido: function(cliente, productos) {
+            executeCall("guardarPedido", [cliente, productos]);
+          }
+        };
+
+        return runner;
+      })();
+    }
+
+    let pedido = [];
+
+    function textoSeleccionado(id) {
+      const select = document.getElementById(id);
+      if (!select || select.selectedIndex < 0) {
+        return "";
       }
+      return select.options[select.selectedIndex].text;
+    }
+
+    function ocultarError() {
+      const error = document.getElementById("error");
+      error.style.display = "none";
+      error.textContent = "";
+    }
+
+    function mostrarError(mensaje) {
+      const error = document.getElementById("error");
+      error.textContent = mensaje;
+      error.style.display = "block";
+    }
+
+    function invalidarCalculo() {
+      document.getElementById("resultado").style.display = "none";
+      document.getElementById("datosPedido").style.display = "none";
+      ocultarError();
+    }
+
+    function actualizarOpciones() {
+      const tipo = document.getElementById("tipoTela").value;
+      const mecanismo = document.getElementById("mecanismo");
+      const color = document.getElementById("color");
+
+      mecanismo.innerHTML = '<option value="">Seleccionar</option>';
+      color.innerHTML = '<option value="">Seleccionar</option>';
+
+      if (tipo === "BLACKOUT_PLUS") {
+        color.innerHTML = '<option value="BLANCO" selected>Blanco</option>';
+        mecanismo.innerHTML +=
+          '<option value="32 PLUS">32 Plus</option>' +
+          '<option value="38 PLUS">38 Plus</option>';
+      }
+
+      if (tipo === "BLACKOUT_PREMIUM") {
+        color.innerHTML +=
+          '<option value="BLANCO">Blanco</option>' +
+          '<option value="NATURAL">Natural</option>' +
+          '<option value="BEIGE">Beige</option>' +
+          '<option value="GRIS">Gris</option>';
+
+        mecanismo.innerHTML +=
+          '<option value="32 PREMIUM">32 Premium</option>' +
+          '<option value="38 PREMIUM">38 Premium</option>';
+      }
+
+      if (tipo === "SUNSCREEN_PREMIUM") {
+        color.innerHTML +=
+          '<option value="BLANCO">Blanco</option>' +
+          '<option value="NATURAL">Natural</option>' +
+          '<option value="GRIS">Gris</option>';
+
+        mecanismo.innerHTML +=
+          '<option value="32 PREMIUM">32 Premium</option>' +
+          '<option value="38 PREMIUM">38 Premium</option>';
+      }
+
+      if (tipo === "TRASLUCIDA") {
+        color.innerHTML +=
+          '<option value="SB15">Blanco SB15</option>' +
+          '<option value="SB19">Natural SB19</option>' +
+          '<option value="SB16">Piedra SB16</option>';
+
+        mecanismo.innerHTML +=
+          '<option value="32 PREMIUM">32 Premium</option>' +
+          '<option value="38 PREMIUM">38 Premium</option>';
+      }
+
+      mostrarTabla();
+      invalidarCalculo();
+    }
+
+    function mostrarTabla() {}
+
+    function abrirInformacion() {
+      document.getElementById("modalInformacion").style.display = "block";
+    }
+
+    function cerrarInformacion() {
+      document.getElementById("modalInformacion").style.display = "none";
+    }
+
+    function abrirTabla() {
+      const urlTabla =
+        "https://drive.google.com/file/d/1Ioks3gSNTffRIlmsnqYuhBRM4P-IOJth/preview";
+
+      if (window.AppInventor) {
+        window.AppInventor.setWebViewString(urlTabla);
+      } else {
+        window.open(urlTabla, "_blank");
+      }
+    }
+
+    function cerrarTabla() {
+      document.getElementById("modalTabla").style.display = "none";
+    }
+
+    function mostrarSegundaCortina() {
+      const dobleSistema = document.getElementById("dobleSistema").checked;
+      const segundaCortina = document.getElementById("segundaCortina");
+
+      segundaCortina.style.display = dobleSistema ? "block" : "none";
+
+      if (!dobleSistema) {
+        document.getElementById("tipoTela2").value = "";
+        document.getElementById("color2").innerHTML = '<option value="">Seleccionar</option>';
+        document.getElementById("mecanismo2").value = "";
+      }
+    }
+
+    function actualizarSegundaCortina() {
+      const tipo2 = document.getElementById("tipoTela2").value;
+      const color2 = document.getElementById("color2");
+
+      color2.innerHTML = '<option value="">Seleccionar</option>';
+
+      if (tipo2 === "SUNSCREEN_PREMIUM") {
+        color2.innerHTML +=
+          '<option value="BLANCO">Blanco</option>' +
+          '<option value="NATURAL">Natural</option>' +
+          '<option value="GRIS">Gris</option>';
+      }
+
+      if (tipo2 === "TRASLUCIDA") {
+        color2.innerHTML +=
+          '<option value="SB15">Blanco SB15</option>' +
+          '<option value="SB19">Natural SB19</option>' +
+          '<option value="SB16">Piedra SB16</option>';
+      }
+    }
+
+    function calcular() {
+      const mecanismo = document.getElementById("mecanismo").value;
+      const ancho = document.getElementById("ancho").value.trim();
+      const alto = document.getElementById("alto").value.trim();
+      const tipoTela = document.getElementById("tipoTela").value;
+
+      const anchoNumero = parseFloat(ancho.replace(",", "."));
+
+      if (tipoTela === "BLACKOUT_PLUS" && !isNaN(anchoNumero) && anchoNumero > 2) {
+        mostrarError("Blackout Plus solo se fabrica hasta 2,00 m de ancho. Seleccioná Blackout Premium.");
+        document.getElementById("resultado").style.display = "none";
+        document.getElementById("datosPedido").style.display = "none";
+        return;
+      }
+
+      if (tipoTela === "TRASLUCIDA" && !isNaN(anchoNumero) && anchoNumero > 2.5) {
+        mostrarError("La tela Traslúcida solo se fabrica hasta 2,50 m de ancho.");
+        document.getElementById("resultado").style.display = "none";
+        document.getElementById("datosPedido").style.display = "none";
+        return;
+      }
+
+      const dobleSistema = document.getElementById("dobleSistema").checked;
+      const boton = document.getElementById("boton");
+      const resultado = document.getElementById("resultado");
+
+      ocultarError();
+      resultado.style.display = "none";
+      document.getElementById("datosPedido").style.display = "none";
+
+      if (!mecanismo || !ancho || !alto) {
+        mostrarError("Completá mecanismo, ancho y alto.");
+        return;
+      }
+
+      boton.disabled = true;
+      boton.textContent = "Calculando...";
+
+      google.script.run
+        .withSuccessHandler(function(precio) {
+          resultado.textContent = "Precio: " + precio;
+          resultado.style.display = "block";
+          document.getElementById("datosPedido").style.display = "block";
+          boton.disabled = false;
+          boton.textContent = "Calcular precio";
+        })
+        .withFailureHandler(function(err) {
+          mostrarError(
+            err && err.message ? err.message : "No se pudo calcular el precio."
+          );
+          boton.disabled = false;
+          boton.textContent = "Calcular precio";
+        })
+        .calcularPrecio(
+          mecanismo,
+          ancho,
+          alto,
+          dobleSistema,
+          CODIGO_CLIENTE
+        );
+    }
+
+    function agregarAlPedido() {
+      const clienteObra = document.getElementById("clienteObra").value.trim();
+      const tipoTela = document.getElementById("tipoTela").value;
+      const color = document.getElementById("color").value;
+      const mecanismo = document.getElementById("mecanismo").value;
+      const caida = document.getElementById("caida").value;
+      const cadena = document.getElementById("cadena").value;
+      const dobleSistema = document.getElementById("dobleSistema").checked;
+
+      if (!clienteObra || !tipoTela || !color || !mecanismo || !caida || !cadena) {
+        mostrarError("Para agregar al pedido, completá Cliente / Obra, tipo de tela, color, mecanismo, caída y cadena.");
+        return;
+      }
+
+      let tipoTela2 = "";
+      let color2 = "";
+      let mecanismo2 = "";
+
+      if (dobleSistema) {
+        tipoTela2 = document.getElementById("tipoTela2").value;
+        color2 = document.getElementById("color2").value;
+        mecanismo2 = document.getElementById("mecanismo2").value;
+
+        if (!tipoTela2 || !color2 || !mecanismo2) {
+          mostrarError("Completá los datos de la segunda cortina.");
+          return;
+        }
+      }
+
+      ocultarError();
+
+      const item = {
+        clienteObra: clienteObra,
+        tipoTela: textoSeleccionado("tipoTela"),
+        color: textoSeleccionado("color"),
+        mecanismo: textoSeleccionado("mecanismo"),
+        caida: textoSeleccionado("caida"),
+        cadena: textoSeleccionado("cadena"),
+        ancho: document.getElementById("ancho").value.trim(),
+        alto: document.getElementById("alto").value.trim(),
+        dobleSistema: dobleSistema ? "Sí" : "No",
+        tipoTela2: dobleSistema ? textoSeleccionado("tipoTela2") : "",
+        color2: dobleSistema ? textoSeleccionado("color2") : "",
+        mecanismo2: dobleSistema ? textoSeleccionado("mecanismo2") : "",
+        precio: document.getElementById("resultado").textContent
+      };
+
+      pedido.push(item);
+      actualizarResumenPedido();
+    }
+
+    function actualizarResumenPedido() {
+      let html = "";
+
+      pedido.forEach(function(p, i) {
+        html +=
+          '<div class="producto-pedido">' +
+          "<b>Cortina " + (i + 1) + "</b><br>" +
+          "Cliente / Obra: " + p.clienteObra + "<br>" +
+          "Tela: " + p.tipoTela + "<br>" +
+          "Color: " + p.color + "<br>" +
+          "Mecanismo: " + p.mecanismo + "<br>" +
+          "Caída: " + p.caida + "<br>" +
+          "Cadena: " + p.cadena + "<br>" +
+          "Medida: " + p.ancho + " × " + p.alto + "<br>" +
+          "Doble sistema: " + p.dobleSistema + "<br>";
+
+        if (p.dobleSistema === "Sí") {
+          html +=
+            "Segunda tela: " + p.tipoTela2 + "<br>" +
+            "Segundo color: " + p.color2 + "<br>" +
+            "Segundo mecanismo: " + p.mecanismo2 + "<br>";
+        }
+
+        html += p.precio + "</div>";
+      });
+
+      document.getElementById("listaPedido").innerHTML = html;
+      document.getElementById("resumenPedido").style.display =
+        pedido.length > 0 ? "block" : "none";
+    }
+
+    function nuevoPedido() {
+      pedido = [];
+      document.getElementById("ancho").value = "";
+      document.getElementById("alto").value = "";
+      document.getElementById("tipoTela").value = "";
+      document.getElementById("mecanismo").innerHTML = '<option value="">Seleccionar</option>';
+
+      document.getElementById("dobleSistema").checked = false;
+      document.getElementById("segundaCortina").style.display = "none";
+
+      document.getElementById("resultado").style.display = "none";
+      document.getElementById("datosPedido").style.display = "none";
+      document.getElementById("resumenPedido").style.display = "none";
+
+      document.querySelector(".contenedor").scrollIntoView({ behavior: "smooth" });
+      location.reload();
+    }
+
+    function confirmarPedido() {
+      if (pedido.length === 0) {
+        mostrarError("No hay cortinas agregadas al pedido.");
+        return;
+      }
+
+      ocultarError();
+
+      const botonConfirmar = document.getElementById("confirmarPedido");
+      botonConfirmar.disabled = true;
+      botonConfirmar.textContent = "Guardando pedido...";
+
+      const productosParaGuardar = pedido.map(function(p) {
+        return {
+          mecanismo: p.mecanismo,
+          ancho: p.ancho,
+          alto: p.alto,
+          tela: p.tipoTela,
+          color: p.color,
+          doble: p.dobleSistema,
+          cantidad: 1,
+          observaciones:
+            "Cliente / Obra: " + p.clienteObra +
+            " | Caída: " + p.caida +
+            " | Cadena: " + p.cadena,
+          precio: p.precio
+        };
+      });
+
+      google.script.run
+        .withSuccessHandler(function() {
+          document.querySelector(".contenedor").innerHTML = `
+            <div style="
+              background:#e8f5e9;
+              border:2px solid #4caf50;
+              border-radius:12px;
+              padding:20px;
+              text-align:center;
+              margin-top:20px;
+            ">
+              <h2 style="color:#2e7d32;">
+                ✅ Pedido guardado correctamente
+              </h2>
+
+              <p><strong>¡Muchas gracias!</strong></p>
+
+              <p>
+                Ya contamos con toda la información necesaria
+                para confeccionar tus cortinas.
+              </p>
+
+              <p>
+                Ahora, por favor comunicate con nosotros para
+                informarnos que ingresaste un pedido y así poder
+                comenzar su procesamiento.
+              </p>
+
+              <button
+                type="button"
+                onclick="nuevoPedido()"
+                style="
+                  margin-top:15px;
+                  padding:12px 24px;
+                  font-size:16px;
+                  border:none;
+                  border-radius:8px;
+                  background:#222;
+                  color:white;
+                  cursor:pointer;
+                "
+              >
+                Ingresar nuevo pedido
+              </button>
+            </div>
+          `;
+
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        })
+        .withFailureHandler(function(err) {
+          mostrarError(
+            err && err.message ? err.message : "No se pudo guardar el pedido."
+          );
+          botonConfirmar.disabled = false;
+          botonConfirmar.textContent = "Confirmar pedido";
+        })
+        .guardarPedido(CODIGO_CLIENTE, productosParaGuardar);
     }
   </script>
 </body>
