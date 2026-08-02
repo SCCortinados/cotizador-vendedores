@@ -57,6 +57,13 @@
       border-radius: 7px;
     }
 
+    select:disabled,
+    input:disabled {
+      background-color: #e9ecef;
+      color: #495057;
+      cursor: not-allowed;
+    }
+
     button {
       width: 100%;
       margin-top: 24px;
@@ -247,7 +254,7 @@
       </a>
 
       <div id="segundaCortina">
-        <h2>Segunda cortina</h2>
+        <h2>Segunda cortina (Doble Sistema)</h2>
 
         <label for="tipoTela2">Tipo de tela</label>
         <select id="tipoTela2" onchange="actualizarSegundaCortina()">
@@ -261,12 +268,13 @@
           <option value="">Seleccionar</option>
         </select>
 
-        <label for="mecanismo2">Mecanismo</label>
-        <select id="mecanismo2">
-          <option value="">Seleccionar</option>
-          <option value="32 PREMIUM">32 Premium</option>
-          <option value="38 PREMIUM">38 Premium</option>
-        </select>
+        <label for="mecanismo2Texto">Mecanismo segunda cortina</label>
+        <input
+          id="mecanismo2Texto"
+          type="text"
+          value="Automático según cortina 1"
+          disabled
+        >
       </div>
 
       <button id="boton" type="button" onclick="calcular()">
@@ -389,7 +397,6 @@
   </div>
 
   <script>
-    // 1. Manejo seguro del Código de Cliente
     let CODIGO_CLIENTE = "";
     
     const urlParams = new URLSearchParams(window.location.search);
@@ -413,7 +420,6 @@
     const URL_WEBAPP =
       "https://script.google.com/macros/s/AKfycbyAzVMQumeLklJArp6vnzTXD0MKdu5TuAkZNgjQU0vPk8Re5Bf4Lvya7AEHGbzWkadGSA/exec";
 
-    // 2. Puente para comunicación con Google Script desde GitHub Pages
     if (typeof google === "undefined" || !google.script || !google.script.run) {
       window.google = window.google || {};
       window.google.script = window.google.script || {};
@@ -547,6 +553,7 @@
           '<option value="38 PREMIUM">38 Premium</option>';
       }
 
+      mostrarSegundaCortina();
       invalidarCalculo();
     }
 
@@ -563,16 +570,33 @@
       window.open(urlTabla, "_blank");
     }
 
+    function obtenerMecanismo2Calculado() {
+      const mec1 = document.getElementById("mecanismo").value;
+      if (mec1.indexOf("38") === 0) {
+        return "38 PREMIUM";
+      } else if (mec1.indexOf("32") === 0) {
+        return "32 PREMIUM";
+      }
+      return "";
+    }
+
     function mostrarSegundaCortina() {
       const dobleSistema = document.getElementById("dobleSistema").checked;
       const segundaCortina = document.getElementById("segundaCortina");
+      const inputMecanismo2 = document.getElementById("mecanismo2Texto");
 
       segundaCortina.style.display = dobleSistema ? "block" : "none";
 
-      if (!dobleSistema) {
+      if (dobleSistema) {
+        const mec2Calculado = obtenerMecanismo2Calculado();
+        if (mec2Calculado) {
+          inputMecanismo2.value = mec2Calculado === "38 PREMIUM" ? "38 Premium" : "32 Premium";
+        } else {
+          inputMecanismo2.value = "Automático (Seleccionar mecanismo 1)";
+        }
+      } else {
         document.getElementById("tipoTela2").value = "";
         document.getElementById("color2").innerHTML = '<option value="">Seleccionar</option>';
-        document.getElementById("mecanismo2").value = "";
       }
     }
 
@@ -684,10 +708,10 @@
       if (dobleSistema) {
         tipoTela2 = document.getElementById("tipoTela2").value;
         color2 = document.getElementById("color2").value;
-        mecanismo2 = document.getElementById("mecanismo2").value;
+        mecanismo2 = obtenerMecanismo2Calculado();
 
         if (!tipoTela2 || !color2 || !mecanismo2) {
-          mostrarError("Completá los datos de la segunda cortina.");
+          mostrarError("Completá la tela y color de la segunda cortina.");
           return;
         }
       }
@@ -706,12 +730,29 @@
         dobleSistema: dobleSistema ? "Sí" : "No",
         tipoTela2: dobleSistema ? textoSeleccionado("tipoTela2") : "",
         color2: dobleSistema ? textoSeleccionado("color2") : "",
-        mecanismo2: dobleSistema ? textoSeleccionado("mecanismo2") : "",
+        mecanismo2: dobleSistema ? (mecanismo2 === "38 PREMIUM" ? "38 Premium" : "32 Premium") : "",
         precio: document.getElementById("resultado").textContent
       };
 
       pedido.push(item);
       actualizarResumenPedido();
+
+      // LIMPIEZA DE CAMPOS PARA LA SIGUIENTE CORTINA
+      document.getElementById("ancho").value = "";
+      document.getElementById("alto").value = "";
+      document.getElementById("tipoTela").value = "";
+      document.getElementById("mecanismo").innerHTML = '<option value="">Seleccionar</option>';
+      document.getElementById("color").innerHTML = '<option value="">Seleccionar</option>';
+      document.getElementById("caida").value = "";
+      document.getElementById("cadena").value = "";
+      document.getElementById("dobleSistema").checked = false;
+      document.getElementById("segundaCortina").style.display = "none";
+      document.getElementById("tipoTela2").value = "";
+      document.getElementById("color2").innerHTML = '<option value="">Seleccionar</option>';
+
+      // Ocultar sección de cálculo ya agregado
+      document.getElementById("resultado").style.display = "none";
+      document.getElementById("datosPedido").style.display = "none";
     }
 
     function eliminarDelPedido(indice) {
@@ -780,7 +821,8 @@
           observaciones:
             "Cliente / Obra: " + p.clienteObra +
             " | Caída: " + p.caida +
-            " | Cadena: " + p.cadena,
+            " | Cadena: " + p.cadena +
+            (p.dobleSistema === "Sí" ? " | Segunda Tela: " + p.tipoTela2 + " (" + p.color2 + ")" : ""),
           precio: p.precio
         };
       });
