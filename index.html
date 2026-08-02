@@ -74,6 +74,16 @@
       cursor: wait;
     }
 
+    .btn-eliminar {
+      background: #c62828;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 5px;
+      font-size: 13px;
+      margin-top: 10px;
+      width: auto;
+    }
+
     #resultado {
       display: none;
       margin-top: 24px;
@@ -119,6 +129,7 @@
       margin-bottom: 12px;
       border-radius: 8px;
       line-height: 1.5;
+      background: #fff;
     }
 
     .doble-sistema {
@@ -129,6 +140,8 @@
 
     .doble-sistema input {
       margin-right: 8px;
+      width: 18px;
+      height: 18px;
     }
 
     .doble-sistema label {
@@ -136,9 +149,22 @@
     }
 
     #linkTabla {
-      display: none;
-      margin-top: 10px;
+      display: inline-block;
+      margin-top: 14px;
       font-size: 14px;
+      color: #0056b3;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    #mensajeExito {
+      display: none;
+      background: #e8f5e9;
+      border: 2px solid #4caf50;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      margin-top: 20px;
     }
   </style>
 </head>
@@ -152,155 +178,186 @@
       class="logo"
     >
 
-    <h1>Cotizador VENDEDORES</h1>
+    <!-- FORMULARIO DE COTIZACIÓN -->
+    <div id="formularioCotizador">
+      <h1>Cotizador VENDEDORES</h1>
 
-    <button type="button" onclick="abrirInformacion()">
-      ℹ️ Información importante
-    </button>
+      <button type="button" onclick="abrirInformacion()">
+        ℹ️ Información importante
+      </button>
 
-    <label for="codigoClienteInput">Código de cliente / Vendedor</label>
-    <input
-      id="codigoClienteInput"
-      type="text"
-      placeholder="Ejemplo: CLI-102"
-      oninput="invalidarCalculo()"
-    >
-
-    <label for="ancho">Ancho final</label>
-    <input
-      id="ancho"
-      type="text"
-      inputmode="decimal"
-      placeholder="Ejemplo: 1,80"
-      oninput="invalidarCalculo()"
-    >
-
-    <label for="alto">Alto final</label>
-    <input
-      id="alto"
-      type="text"
-      inputmode="decimal"
-      placeholder="Ejemplo: 2,10"
-      oninput="invalidarCalculo()"
-    >
-
-    <label for="tipoTela">Tipo de tela</label>
-    <select id="tipoTela" onchange="actualizarOpciones()">
-      <option value="">Seleccionar</option>
-      <option value="BLACKOUT_PLUS">Blackout Plus</option>
-      <option value="BLACKOUT_PREMIUM">Blackout Premium</option>
-      <option value="SUNSCREEN_PREMIUM">Sunscreen Premium</option>
-      <option value="TRASLUCIDA">Translúcida</option>
-    </select>
-
-    <label for="mecanismo">Mecanismo</label>
-    <select
-      id="mecanismo"
-      onchange="mostrarTabla(); mostrarSegundaCortina(); invalidarCalculo();"
-    >
-      <option value="">Seleccionar</option>
-    </select>
-
-    <div class="doble-sistema">
+      <label for="codigoClienteInput">Código de cliente / Vendedor</label>
       <input
-        type="checkbox"
-        id="dobleSistema"
-        onchange="mostrarSegundaCortina(); invalidarCalculo();"
+        id="codigoClienteInput"
+        type="text"
+        placeholder="Ejemplo: CLI-102"
+        oninput="invalidarCalculo()"
       >
-      <label for="dobleSistema">Doble sistema</label>
-    </div>
 
-    <a
-      id="linkTabla"
-      href="#"
-      onclick="abrirTabla(); return false;"
-      style="display:inline-block;"
-    >
-      ¿Qué mecanismo corresponde? Ver tabla
-    </a>
+      <label for="ancho">Ancho final</label>
+      <input
+        id="ancho"
+        type="text"
+        inputmode="decimal"
+        placeholder="Ejemplo: 1,80"
+        oninput="invalidarCalculo()"
+      >
 
-    <div id="segundaCortina">
-      <h2>Segunda cortina</h2>
+      <label for="alto">Alto final</label>
+      <input
+        id="alto"
+        type="text"
+        inputmode="decimal"
+        placeholder="Ejemplo: 2,10"
+        oninput="invalidarCalculo()"
+      >
 
-      <label for="tipoTela2">Tipo de tela</label>
-      <select id="tipoTela2" onchange="actualizarSegundaCortina()">
+      <label for="tipoTela">Tipo de tela</label>
+      <select id="tipoTela" onchange="actualizarOpciones()">
         <option value="">Seleccionar</option>
+        <option value="BLACKOUT_PLUS">Blackout Plus</option>
+        <option value="BLACKOUT_PREMIUM">Blackout Premium</option>
         <option value="SUNSCREEN_PREMIUM">Sunscreen Premium</option>
         <option value="TRASLUCIDA">Translúcida</option>
       </select>
 
-      <label for="color2">Color</label>
-      <select id="color2">
+      <label for="mecanismo">Mecanismo</label>
+      <select
+        id="mecanismo"
+        onchange="mostrarSegundaCortina(); invalidarCalculo();"
+      >
         <option value="">Seleccionar</option>
       </select>
 
-      <label for="mecanismo2">Mecanismo</label>
-      <select id="mecanismo2">
-        <option value="">Seleccionar</option>
-        <option value="32 PREMIUM">32 Premium</option>
-        <option value="38 PREMIUM">38 Premium</option>
-      </select>
+      <div class="doble-sistema">
+        <input
+          type="checkbox"
+          id="dobleSistema"
+          onchange="mostrarSegundaCortina(); invalidarCalculo();"
+        >
+        <label for="dobleSistema">Doble sistema</label>
+      </div>
+
+      <a
+        id="linkTabla"
+        href="#"
+        onclick="abrirTabla(); return false;"
+      >
+        ¿Qué mecanismo corresponde? Ver tabla
+      </a>
+
+      <div id="segundaCortina">
+        <h2>Segunda cortina</h2>
+
+        <label for="tipoTela2">Tipo de tela</label>
+        <select id="tipoTela2" onchange="actualizarSegundaCortina()">
+          <option value="">Seleccionar</option>
+          <option value="SUNSCREEN_PREMIUM">Sunscreen Premium</option>
+          <option value="TRASLUCIDA">Translúcida</option>
+        </select>
+
+        <label for="color2">Color</label>
+        <select id="color2">
+          <option value="">Seleccionar</option>
+        </select>
+
+        <label for="mecanismo2">Mecanismo</label>
+        <select id="mecanismo2">
+          <option value="">Seleccionar</option>
+          <option value="32 PREMIUM">32 Premium</option>
+          <option value="38 PREMIUM">38 Premium</option>
+        </select>
+      </div>
+
+      <button id="boton" type="button" onclick="calcular()">
+        Calcular precio
+      </button>
+
+      <div id="resultado"></div>
+
+      <div id="datosPedido">
+        <label for="clienteObra">Cliente / Obra</label>
+        <input
+          id="clienteObra"
+          type="text"
+          placeholder="Ej.: Casa González"
+        >
+
+        <label for="color">Color</label>
+        <select id="color">
+          <option value="">Seleccionar</option>
+        </select>
+
+        <label for="caida">Caída</label>
+        <select id="caida">
+          <option value="">Seleccionar</option>
+          <option value="TRASERA">Trasera</option>
+          <option value="DELANTERA">Delantera</option>
+        </select>
+
+        <label for="cadena">Cadena</label>
+        <select id="cadena">
+          <option value="">Seleccionar</option>
+          <option value="DERECHA">Derecha</option>
+          <option value="IZQUIERDA">Izquierda</option>
+        </select>
+
+        <button
+          id="agregarPedido"
+          type="button"
+          onclick="agregarAlPedido()"
+        >
+          Agregar al pedido
+        </button>
+      </div>
+
+      <div id="resumenPedido">
+        <h2>Pedido</h2>
+        <div id="listaPedido"></div>
+
+        <button
+          id="confirmarPedido"
+          type="button"
+          onclick="confirmarPedido()"
+        >
+          Confirmar pedido
+        </button>
+      </div>
+
+      <div id="error"></div>
     </div>
 
-    <button id="boton" type="button" onclick="calcular()">
-      Calcular precio
-    </button>
-
-    <div id="resultado"></div>
-
-    <div id="datosPedido">
-
-      <label for="clienteObra">Cliente / Obra</label>
-      <input
-        id="clienteObra"
-        type="text"
-        placeholder="Ej.: Casa González"
-      >
-
-      <label for="color">Color</label>
-      <select id="color">
-        <option value="">Seleccionar</option>
-      </select>
-
-      <label for="caida">Caída</label>
-      <select id="caida">
-        <option value="">Seleccionar</option>
-        <option value="TRASERA">Trasera</option>
-        <option value="DELANTERA">Delantera</option>
-      </select>
-
-      <label for="cadena">Cadena</label>
-      <select id="cadena">
-        <option value="">Seleccionar</option>
-        <option value="DERECHA">Derecha</option>
-        <option value="IZQUIERDA">Izquierda</option>
-      </select>
-
+    <!-- PANTALLA DE CONFIRMACIÓN DE PEDIDO -->
+    <div id="mensajeExito">
+      <h2 style="color:#2e7d32; margin-top:0;">
+        ✅ Pedido guardado correctamente
+      </h2>
+      <p><strong>¡Muchas gracias!</strong></p>
+      <p>
+        Ya contamos con toda la información necesaria para confeccionar tus cortinas.
+      </p>
+      <p>
+        Ahora, por favor comunicate con nosotros para informarnos que ingresaste un pedido y así poder comenzar su procesamiento.
+      </p>
       <button
-        id="agregarPedido"
         type="button"
-        onclick="agregarAlPedido()"
+        onclick="nuevoPedido()"
+        style="
+          margin-top:15px;
+          padding:12px 24px;
+          font-size:16px;
+          border:none;
+          border-radius:8px;
+          background:#222;
+          color:white;
+          cursor:pointer;
+        "
       >
-        Agregar al pedido
+        Ingresar nuevo pedido
       </button>
     </div>
 
-    <div id="resumenPedido">
-      <h2>Pedido</h2>
-
-      <div id="listaPedido"></div>
-
-      <button
-        id="confirmarPedido"
-        type="button"
-        onclick="confirmarPedido()"
-      >
-        Confirmar pedido
-      </button>
-    </div>
-
-    <div id="error"></div>
-
+    <!-- MODAL INFORMACION -->
     <div id="modalInformacion" style="
       display:none;
       position:fixed;
@@ -332,14 +389,12 @@
   </div>
 
   <script>
-    // Manejo seguro del código de cliente
+    // 1. Manejo seguro del Código de Cliente
     let CODIGO_CLIENTE = "";
     
-    // Extrae el cliente desde la URL si viene como parametro ?cliente=XYZ
     const urlParams = new URLSearchParams(window.location.search);
     CODIGO_CLIENTE = urlParams.get("cliente") || urlParams.get("codigo") || urlParams.get("c") || "";
 
-    // Al cargar la página, autocompletar el campo si vino en la URL
     window.addEventListener("DOMContentLoaded", function() {
       const inputCodigo = document.getElementById("codigoClienteInput");
       if (inputCodigo && CODIGO_CLIENTE) {
@@ -358,7 +413,7 @@
     const URL_WEBAPP =
       "https://script.google.com/macros/s/AKfycbyAzVMQumeLklJArp6vnzTXD0MKdu5TuAkZNgjQU0vPk8Re5Bf4Lvya7AEHGbzWkadGSA/exec";
 
-    // PUENTE DE COMPATIBILIDAD (Soporte nativo para GitHub Pages)
+    // 2. Puente para comunicación con Google Script desde GitHub Pages
     if (typeof google === "undefined" || !google.script || !google.script.run) {
       window.google = window.google || {};
       window.google.script = window.google.script || {};
@@ -492,11 +547,8 @@
           '<option value="38 PREMIUM">38 Premium</option>';
       }
 
-      mostrarTabla();
       invalidarCalculo();
     }
-
-    function mostrarTabla() {}
 
     function abrirInformacion() {
       document.getElementById("modalInformacion").style.display = "block";
@@ -507,18 +559,8 @@
     }
 
     function abrirTabla() {
-      const urlTabla =
-        "https://drive.google.com/file/d/1Ioks3gSNTffRIlmsnqYuhBRM4P-IOJth/preview";
-
-      if (window.AppInventor) {
-        window.AppInventor.setWebViewString(urlTabla);
-      } else {
-        window.open(urlTabla, "_blank");
-      }
-    }
-
-    function cerrarTabla() {
-      document.getElementById("modalTabla").style.display = "none";
+      const urlTabla = "https://drive.google.com/file/d/1Ioks3gSNTffRIlmsnqYuhBRM4P-IOJth/preview";
+      window.open(urlTabla, "_blank");
     }
 
     function mostrarSegundaCortina() {
@@ -571,15 +613,13 @@
 
       if (tipoTela === "BLACKOUT_PLUS" && !isNaN(anchoNumero) && anchoNumero > 2) {
         mostrarError("Blackout Plus solo se fabrica hasta 2,00 m de ancho. Seleccioná Blackout Premium.");
-        document.getElementById("resultado").style.display = "none";
-        document.getElementById("datosPedido").style.display = "none";
+        invalidarCalculo();
         return;
       }
 
       if (tipoTela === "TRASLUCIDA" && !isNaN(anchoNumero) && anchoNumero > 2.5) {
         mostrarError("La tela Traslúcida solo se fabrica hasta 2,50 m de ancho.");
-        document.getElementById("resultado").style.display = "none";
-        document.getElementById("datosPedido").style.display = "none";
+        invalidarCalculo();
         return;
       }
 
@@ -674,6 +714,11 @@
       actualizarResumenPedido();
     }
 
+    function eliminarDelPedido(indice) {
+      pedido.splice(indice, 1);
+      actualizarResumenPedido();
+    }
+
     function actualizarResumenPedido() {
       let html = "";
 
@@ -697,7 +742,9 @@
             "Segundo mecanismo: " + p.mecanismo2 + "<br>";
         }
 
-        html += p.precio + "</div>";
+        html += "<b>" + p.precio + "</b><br>";
+        html += '<button type="button" class="btn-eliminar" onclick="eliminarDelPedido(' + i + ')">🗑️ Eliminar</button>';
+        html += "</div>";
       });
 
       document.getElementById("listaPedido").innerHTML = html;
@@ -706,21 +753,7 @@
     }
 
     function nuevoPedido() {
-      pedido = [];
-      document.getElementById("ancho").value = "";
-      document.getElementById("alto").value = "";
-      document.getElementById("tipoTela").value = "";
-      document.getElementById("mecanismo").innerHTML = '<option value="">Seleccionar</option>';
-
-      document.getElementById("dobleSistema").checked = false;
-      document.getElementById("segundaCortina").style.display = "none";
-
-      document.getElementById("resultado").style.display = "none";
-      document.getElementById("datosPedido").style.display = "none";
-      document.getElementById("resumenPedido").style.display = "none";
-
-      document.querySelector(".contenedor").scrollIntoView({ behavior: "smooth" });
-      location.reload();
+      window.location.reload();
     }
 
     function confirmarPedido() {
@@ -754,51 +787,8 @@
 
       google.script.run
         .withSuccessHandler(function() {
-          document.querySelector(".contenedor").innerHTML = `
-            <div style="
-              background:#e8f5e9;
-              border:2px solid #4caf50;
-              border-radius:12px;
-              padding:20px;
-              text-align:center;
-              margin-top:20px;
-            ">
-              <h2 style="color:#2e7d32;">
-                ✅ Pedido guardado correctamente
-              </h2>
-
-              <p><strong>¡Muchas gracias!</strong></p>
-
-              <p>
-                Ya contamos con toda la información necesaria
-                para confeccionar tus cortinas.
-              </p>
-
-              <p>
-                Ahora, por favor comunicate con nosotros para
-                informarnos que ingresaste un pedido y así poder
-                comenzar su procesamiento.
-              </p>
-
-              <button
-                type="button"
-                onclick="nuevoPedido()"
-                style="
-                  margin-top:15px;
-                  padding:12px 24px;
-                  font-size:16px;
-                  border:none;
-                  border-radius:8px;
-                  background:#222;
-                  color:white;
-                  cursor:pointer;
-                "
-              >
-                Ingresar nuevo pedido
-              </button>
-            </div>
-          `;
-
+          document.getElementById("formularioCotizador").style.display = "none";
+          document.getElementById("mensajeExito").style.display = "block";
           window.scrollTo({ top: 0, behavior: "smooth" });
         })
         .withFailureHandler(function(err) {
