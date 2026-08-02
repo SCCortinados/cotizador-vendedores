@@ -158,6 +158,14 @@
       ℹ️ Información importante
     </button>
 
+    <label for="codigoClienteInput">Código de cliente / Vendedor</label>
+    <input
+      id="codigoClienteInput"
+      type="text"
+      placeholder="Ejemplo: CLI-102"
+      oninput="invalidarCalculo()"
+    >
+
     <label for="ancho">Ancho final</label>
     <input
       id="ancho"
@@ -324,16 +332,33 @@
   </div>
 
   <script>
-    // Manejo seguro del código de cliente en GitHub Pages vs Google Script
-    let CODIGO_CLIENTE = "<?= codigoCliente ?>";
-    if (CODIGO_CLIENTE.includes("<?")) {
-      CODIGO_CLIENTE = new URLSearchParams(window.location.search).get("cliente") || "GENERAL";
+    // Manejo seguro del código de cliente
+    let CODIGO_CLIENTE = "";
+    
+    // Extrae el cliente desde la URL si viene como parametro ?cliente=XYZ
+    const urlParams = new URLSearchParams(window.location.search);
+    CODIGO_CLIENTE = urlParams.get("cliente") || urlParams.get("codigo") || urlParams.get("c") || "";
+
+    // Al cargar la página, autocompletar el campo si vino en la URL
+    window.addEventListener("DOMContentLoaded", function() {
+      const inputCodigo = document.getElementById("codigoClienteInput");
+      if (inputCodigo && CODIGO_CLIENTE) {
+        inputCodigo.value = CODIGO_CLIENTE.trim().toUpperCase();
+      }
+    });
+
+    function obtenerCodigoClienteActual() {
+      const inputCodigo = document.getElementById("codigoClienteInput");
+      if (inputCodigo && inputCodigo.value.trim() !== "") {
+        return inputCodigo.value.trim().toUpperCase();
+      }
+      return CODIGO_CLIENTE.trim().toUpperCase();
     }
 
     const URL_WEBAPP =
       "https://script.google.com/macros/s/AKfycbyAzVMQumeLklJArp6vnzTXD0MKdu5TuAkZNgjQU0vPk8Re5Bf4Lvya7AEHGbzWkadGSA/exec";
 
-    // PUENTE DE COMPATIBILIDAD (Polyfill para google.script.run fuera de Google)
+    // PUENTE DE COMPATIBILIDAD (Soporte nativo para GitHub Pages)
     if (typeof google === "undefined" || !google.script || !google.script.run) {
       window.google = window.google || {};
       window.google.script = window.google.script || {};
@@ -346,7 +371,7 @@
           const params = new URLSearchParams();
           params.append("action", actionName);
           params.append("data", JSON.stringify(argsArray));
-          params.append("cliente", CODIGO_CLIENTE);
+          params.append("cliente", obtenerCodigoClienteActual());
 
           fetch(URL_WEBAPP + "?" + params.toString(), {
             method: "GET",
@@ -354,30 +379,18 @@
           })
           .then(res => res.json())
           .then(data => {
-            if (data && data.error) failureCb(new Error(data.error));
-            else if (data && data.precio !== undefined) successCb(data.precio);
-            else successCb(data);
+            if (data && data.ok === false) {
+              failureCb(new Error(data.error || "Ocurrió un error en el servidor."));
+            } else if (data && data.precio !== undefined) {
+              successCb(data.precio);
+            } else if (data && data.result !== undefined) {
+              successCb(data.result);
+            } else {
+              successCb(data);
+            }
           })
           .catch(err => {
-            // Intento alternativo por POST si GET falla por CORS
-            fetch(URL_WEBAPP, {
-              method: "POST",
-              headers: { "Content-Type": "text/plain;charset=utf-8" },
-              body: JSON.stringify({ action: actionName, args: argsArray, codigoCliente: CODIGO_CLIENTE })
-            })
-            .then(res => res.text())
-            .then(text => {
-              try {
-                const parsed = JSON.parse(text);
-                if (parsed.error) failureCb(new Error(parsed.error));
-                else successCb(parsed.result !== undefined ? parsed.result : parsed);
-              } catch(e) {
-                successCb(text);
-              }
-            })
-            .catch(postErr => {
-              failureCb(postErr || new Error("No se pudo conectar con el servidor de Google Script."));
-            });
+            failureCb(err || new Error("No se pudo conectar con el servidor de Google Script."));
           });
         }
 
@@ -391,10 +404,10 @@
             return runner;
           },
           calcularPrecio: function(mecanismo, ancho, alto, dobleSistema, cliente) {
-            executeCall("calcularPrecio", [mecanismo, ancho, alto, dobleSistema, cliente]);
+            executeCall("calcularPrecio", [mecanismo, ancho, alto, dobleSistema, cliente || obtenerCodigoClienteActual()]);
           },
           guardarPedido: function(cliente, productos) {
-            executeCall("guardarPedido", [cliente, productos]);
+            executeCall("guardarPedido", [cliente || obtenerCodigoClienteActual(), productos]);
           }
         };
 
@@ -543,10 +556,16 @@
     }
 
     function calcular() {
+      const codigoCliente = obtenerCodigoClienteActual();
       const mecanismo = document.getElementById("mecanismo").value;
       const ancho = document.getElementById("ancho").value.trim();
       const alto = document.getElementById("alto").value.trim();
       const tipoTela = document.getElementById("tipoTela").value;
+
+      if (!codigoCliente) {
+        mostrarError("Ingresá el Código de cliente / Vendedor.");
+        return;
+      }
 
       const anchoNumero = parseFloat(ancho.replace(",", "."));
 
@@ -600,7 +619,7 @@
           ancho,
           alto,
           dobleSistema,
-          CODIGO_CLIENTE
+          codigoCliente
         );
     }
 
@@ -789,7 +808,7 @@
           botonConfirmar.disabled = false;
           botonConfirmar.textContent = "Confirmar pedido";
         })
-        .guardarPedido(CODIGO_CLIENTE, productosParaGuardar);
+        .guardarPedido(obtenerCodigoClienteActual(), productosParaGuardar);
     }
   </script>
 </body>
