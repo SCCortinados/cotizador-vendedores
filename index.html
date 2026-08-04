@@ -316,11 +316,11 @@
   </select>
 
   <div class="doble-sistema">
-    <input
-      type="checkbox"
-      id="dobleSistema"
-      onchange="invalidarCalculo();"
-    >
+   <input
+  type="checkbox"
+  id="dobleSistema"
+  onchange="invalidarCalculo();"
+>
     <label for="dobleSistema">Doble sistema</label>
   </div>
 
@@ -634,13 +634,12 @@
       error.style.display = "block";
     }
 
-    function invalidarCalculo() {
-      document.getElementById("resultado").style.display = "none";
-      document.getElementById("datosPedido").style.display = "none";
-      document.getElementById("segundaCortina").style.display = "none";
-      document.getElementById("labelColorPrincipal").textContent = "Color";
-      ocultarError();
-    }
+   function invalidarCalculo() {
+  document.getElementById("resultado").style.display = "none";
+  document.getElementById("datosPedido").style.display = "none";
+  document.getElementById("segundaCortina").style.display = "none";
+  ocultarError();
+}
 
     function actualizarOpciones() {
       const tipo = document.getElementById("tipoTela").value;
@@ -826,6 +825,16 @@
           resultado.textContent = "Precio: " + precio;
           resultado.style.display = "block";
           document.getElementById("datosPedido").style.display = "block";
+            const dobleSistema = document.getElementById("dobleSistema").checked;
+  document.getElementById("segundaCortina").style.display =
+    dobleSistema ? "block" : "none";
+
+  const labelColor = document.querySelector('label[for="color"]');
+  if (labelColor) {
+    labelColor.textContent = dobleSistema
+      ? "Color de la primera cortina"
+      : "Color";
+  }
           prepararDatosPedido();
           boton.disabled = false;
           boton.textContent = "Calcular precio";
