@@ -254,7 +254,6 @@
 <body>
   <div class="contenedor">
 
-```
 <img
   src="https://lh3.googleusercontent.com/d/1zPHiAc55Ob8hGopaZS_-q_RR11smrSve"
   alt="SC Cortinados"
@@ -311,7 +310,7 @@
   <label for="mecanismo">Mecanismo</label>
   <select
     id="mecanismo"
-    onchange="mostrarSegundaCortina(); invalidarCalculo();"
+    onchange="invalidarCalculo();"
   >
     <option value="">Seleccionar</option>
   </select>
@@ -320,7 +319,7 @@
     <input
       type="checkbox"
       id="dobleSistema"
-      onchange="mostrarSegundaCortina(); invalidarCalculo();"
+      onchange="invalidarCalculo();"
     >
     <label for="dobleSistema">Doble sistema</label>
   </div>
@@ -332,30 +331,6 @@
   >
     ¿Qué mecanismo corresponde? Ver tabla
   </a>
-
-  <div id="segundaCortina">
-    <h2>Segunda cortina (Doble Sistema)</h2>
-
-    <label for="tipoTela2">Tipo de tela</label>
-    <select id="tipoTela2" onchange="actualizarSegundaCortina()">
-      <option value="">Seleccionar</option>
-      <option value="SUNSCREEN_PREMIUM">Sunscreen Premium</option>
-      <option value="TRASLUCIDA">Translúcida</option>
-    </select>
-
-    <label for="color2">Color</label>
-    <select id="color2">
-      <option value="">Seleccionar</option>
-    </select>
-
-    <label for="mecanismo2Texto">Mecanismo segunda cortina</label>
-    <input
-      id="mecanismo2Texto"
-      type="text"
-      value="Automático según cortina 1"
-      disabled
-    >
-  </div>
 
   <button id="boton" type="button" onclick="calcular()">
     Calcular precio
@@ -371,10 +346,34 @@
       placeholder="Ej.: Casa González"
     >
 
-    <label for="color">Color</label>
+    <label id="labelColorPrincipal" for="color">Color</label>
     <select id="color">
       <option value="">Seleccionar</option>
     </select>
+
+    <div id="segundaCortina">
+      <h2>Segunda cortina (Doble Sistema)</h2>
+
+      <label for="tipoTela2">Tipo de tela de la segunda cortina</label>
+      <select id="tipoTela2" onchange="actualizarSegundaCortina()">
+        <option value="">Seleccionar</option>
+        <option value="SUNSCREEN_PREMIUM">Sunscreen Premium</option>
+        <option value="TRASLUCIDA">Translúcida</option>
+      </select>
+
+      <label for="color2">Color de la segunda cortina</label>
+      <select id="color2">
+        <option value="">Seleccionar</option>
+      </select>
+
+      <label for="mecanismo2Texto">Mecanismo segunda cortina</label>
+      <input
+        id="mecanismo2Texto"
+        type="text"
+        value="Automático según cortina 1"
+        disabled
+      >
+    </div>
 
     <label for="caida">Caída</label>
     <select id="caida">
@@ -507,7 +506,6 @@
 
   </div>
 </div>
-```
 
   </div>
 
@@ -639,6 +637,8 @@
     function invalidarCalculo() {
       document.getElementById("resultado").style.display = "none";
       document.getElementById("datosPedido").style.display = "none";
+      document.getElementById("segundaCortina").style.display = "none";
+      document.getElementById("labelColorPrincipal").textContent = "Color";
       ocultarError();
     }
 
@@ -691,7 +691,6 @@
           '<option value="38 PREMIUM">38 Premium</option>';
       }
 
-      mostrarSegundaCortina();
       invalidarCalculo();
     }
 
@@ -720,25 +719,24 @@
       return "";
     }
 
-    function mostrarSegundaCortina() {
+    function prepararDatosPedido() {
       const dobleSistema = document.getElementById("dobleSistema").checked;
       const segundaCortina = document.getElementById("segundaCortina");
+      const labelColorPrincipal = document.getElementById("labelColorPrincipal");
       const inputMecanismo2 = document.getElementById("mecanismo2Texto");
+
+      labelColorPrincipal.textContent = dobleSistema
+        ? "Color de la primera cortina"
+        : "Color";
 
       segundaCortina.style.display = dobleSistema ? "block" : "none";
 
       if (dobleSistema) {
         const mec2Calculado = obtenerMecanismo2Calculado();
-
-        if (mec2Calculado) {
-          inputMecanismo2.value =
-            mec2Calculado === "38 PREMIUM"
-              ? "38 Premium"
-              : "32 Premium";
-        } else {
-          inputMecanismo2.value =
-            "Automático (Seleccionar mecanismo 1)";
-        }
+        inputMecanismo2.value =
+          mec2Calculado === "38 PREMIUM"
+            ? "38 Premium (automático)"
+            : "32 Premium (automático)";
       } else {
         document.getElementById("tipoTela2").value = "";
         document.getElementById("color2").innerHTML =
@@ -828,6 +826,7 @@
           resultado.textContent = "Precio: " + precio;
           resultado.style.display = "block";
           document.getElementById("datosPedido").style.display = "block";
+          prepararDatosPedido();
           boton.disabled = false;
           boton.textContent = "Calcular precio";
         })
