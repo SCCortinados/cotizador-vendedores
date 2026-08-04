@@ -5,65 +5,194 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cotizador SC Cortinados</title>
   <style>
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; margin: 0; padding: 15px; color: #333; }
-    .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-    h1 { color: #1b5e20; text-align: center; font-size: 22px; margin-bottom: 20px; }
-    label { font-weight: bold; font-size: 13px; display: block; margin-top: 10px; margin-bottom: 4px; }
-    input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
-    button { width: 100%; padding: 12px; margin-top: 15px; border: none; border-radius: 6px; font-weight: bold; font-size: 15px; cursor: pointer; transition: 0.2s; }
-    .btn-agregar { background: #1565c0; color: white; }
-    .btn-confirmar { background: #2e7d32; color: white; }
-    .btn-nuevo { background: #1b5e20; color: white; padding: 14px; }
-    .tabla-pedido { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
-    .tabla-pedido th, .tabla-pedido td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-    .tabla-pedido th { background: #e8f5e9; color: #1b5e20; }
-    #errorBox { background: #ffebee; color: #c62828; padding: 10px; border-radius: 6px; margin-bottom: 10px; display: none; font-size: 13px; }
-    #mensajeExito { display: none; text-align: center; }
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background-color: #f4f6f8;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    #formularioCotizador {
+      background: #ffffff;
+      padding: 25px 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      max-width: 500px;
+      width: 100%;
+    }
+    .logo-container {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    .logo-img {
+      max-width: 180px;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+    h1 {
+      text-align: center;
+      color: #1b5e20;
+      font-size: 24px;
+      margin-top: 0;
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      color: #333;
+      margin-top: 15px;
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: #2e7d32;
+    }
+    .flex-row {
+      display: flex;
+      gap: 10px;
+    }
+    .flex-row > div {
+      flex: 1;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 18px;
+      transition: background 0.2s;
+    }
+    .btn-calcular {
+      background-color: #1b5e20;
+      color: white;
+    }
+    .btn-calcular:hover {
+      background-color: #144417;
+    }
+    .btn-agregar {
+      background-color: #1565c0;
+      color: white;
+    }
+    .btn-agregar:hover {
+      background-color: #0d47a1;
+    }
+    .btn-enviar {
+      background-color: #2e7d32;
+      color: white;
+    }
+    .btn-enviar:hover {
+      background-color: #1b5e20;
+    }
+    #errorBox {
+      color: #d32f2f;
+      background: #ffebee;
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      display: none;
+      font-size: 13px;
+    }
+    #resultadoPrecio {
+      margin-top: 15px;
+      font-size: 20px;
+      font-weight: bold;
+      text-align: center;
+      color: #1b5e20;
+    }
+    .pedido-item {
+      background: #f9f9f9;
+      border-left: 4px solid #2e7d32;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 15px;
+    }
+    .checkbox-container input {
+      width: auto;
+    }
+    #mensajeExito {
+      display: none;
+      background: #e8f5e9;
+      border: 1px solid #a5d6a7;
+      color: #1b5e20;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div id="formularioCotizador">
-      <h1>✂️ Cotizador SC Cortinados</h1>
-      <div id="errorBox"></div>
 
-      <!-- DATOS DEL VENDEDOR -->
-      <div style="background: #eefbe8; padding: 12px; border-radius: 8px; border: 1px solid #c8e6c9; margin-bottom: 15px;">
-        <label for="emailVendedor" style="margin-top:0; color:#1b5e20;">📧 Tu Email (para recibir comprobante automático):</label>
-        <input type="email" id="emailVendedor" placeholder="tu-email@ejemplo.com" onchange="localStorage.setItem('emailVendedorRegistrado', this.value)">
-      </div>
+  <div id="formularioCotizador">
+    
+    <!-- Contenedor del Logo -->
+    <div class="logo-container">
+      <img src="logo.png" alt="SC Cortinados" class="logo-img" onerror="if(!this.dataset.triedJpg){this.dataset.triedJpg=true;this.src='logo.jpg';}else{this.style.display='none';}">
+    </div>
 
+    <h1>✂️ Cotizador SC Cortinados</h1>
+    <div id="errorBox"></div>
+
+    <div id="contenidoFormulario">
       <label for="clienteObra">👤 Cliente / Obra:</label>
       <input type="text" id="clienteObra" placeholder="Nombre o referencia">
+
+      <label for="emailVendedor">📧 Email Vendedor:</label>
+      <input type="email" id="emailVendedor" placeholder="tu-email@ejemplo.com" onchange="localStorage.setItem('emailVendedorRegistrado', this.value)">
 
       <label for="mecanismo">⚙️ Mecanismo:</label>
       <select id="mecanismo">
         <option value="32 PLUS">32 PLUS</option>
-        <option value="38 PLUS">38 PLUS</option>
         <option value="32 PREMIUM">32 PREMIUM</option>
+        <option value="38 PLUS">38 PLUS</option>
         <option value="38 PREMIUM">38 PREMIUM</option>
       </select>
 
-      <div style="display: flex; gap: 10px;">
-        <div style="flex: 1;">
+      <div class="flex-row">
+        <div>
           <label for="ancho">↔️ Ancho (m):</label>
           <input type="number" id="ancho" step="0.01" placeholder="Ej: 1.50">
         </div>
-        <div style="flex: 1;">
+        <div>
           <label for="alto">↕️ Alto (m):</label>
           <input type="number" id="alto" step="0.01" placeholder="Ej: 2.10">
         </div>
       </div>
 
-      <label for="tipoTela">🧵 Tipo de Tela:</label>
+      <label for="tipoTela">📜 Tipo de Tela:</label>
       <input type="text" id="tipoTela" placeholder="Ej: Blackout, Screen">
 
-      <label for="color">🎨 Color:</label>
-      <input type="text" id="color" placeholder="Ej: Blanco, Beige">
+      <label for="colorTela">🎨 Color:</label>
+      <input type="text" id="colorTela" placeholder="Ej: Blanco, Beige">
 
       <label for="caida">🔄 Caída:</label>
       <select id="caida">
-        <option value="Por Atras">Por Atrás</option>
+        <option value="Por Atrás">Por Atrás</option>
         <option value="Por Delante">Por Delante</option>
       </select>
 
@@ -73,223 +202,224 @@
         <option value="Metálica">Metálica</option>
       </select>
 
-      <label for="dobleSistema">✨ ¿Doble Sistema?:</label>
-      <select id="dobleSistema">
-        <option value="No">No</option>
-        <option value="Sí">Sí</option>
-      </select>
+      <div class="checkbox-container">
+        <input type="checkbox" id="dobleSistema">
+        <label for="dobleSistema" style="margin:0;">✨ ¿Doble Sistema?</label>
+      </div>
 
-      <button type="button" class="btn-agregar" onclick="agregarCortina()">➕ Calcular y Agregar al Pedido</button>
+      <label for="observaciones">📝 Observaciones / Detalles:</label>
+      <textarea id="observaciones" rows="2" placeholder="Detalles adicionales..."></textarea>
 
-      <!-- TABLA DE RESUMEN -->
-      <h3 style="margin-top: 20px; color:#333;">🛒 Cortinas Agregadas</h3>
-      <table class="tabla-pedido">
-        <thead>
-          <tr>
-            <th>Detalle</th>
-            <th>Medida</th>
-            <th>Precio</th>
-            <th>Acción</th>
-          </tr>
-        </thead>
-        <tbody id="cuerpoTabla">
-          <tr><td colspan="4" style="text-align:center; color:#888;">No hay cortinas agregadas.</td></tr>
-        </tbody>
-      </table>
+      <button class="btn-calcular" onclick="calcularPrecioWeb()">💰 Calcular Precio</button>
+      <div id="resultadoPrecio"></div>
 
-      <button type="button" id="confirmarPedido" class="btn-confirmar" style="display:none;" onclick="confirmarPedido()">✅ Confirmar y Enviar Pedido</button>
+      <button class="btn-agregar" onclick="agregarAlPedido()" style="display:none;" id="btnAgregar">➕ Agregar al Pedido</button>
+
+      <div id="listaPedidoContainer" style="margin-top:20px; display:none;">
+        <h3 style="color:#1b5e20; margin-bottom:10px;">🛒 Resumen del Pedido:</h3>
+        <div id="listaPedidoItems"></div>
+        <button class="btn-enviar" onclick="enviarPedidoWeb()">🚀 Confirmar y Enviar Pedido</button>
+      </div>
     </div>
 
+    <!-- Contenedor Mensaje Éxito -->
     <div id="mensajeExito">
-      <h2 style="color:#2e7d32; margin-top:0;">✅ Pedido Guardado con Éxito</h2>
-      <p><strong id="numeroPedidoTexto" style="font-size: 18px; color: #1565c0;"></strong></p>
-
-      <div id="avisoEmailEnviado" style="background: #e8f5e9; border: 1px solid #a5d6a7; color: #1b5e20; padding: 12px; border-radius: 8px; font-size: 14px; margin: 15px 0;">
-        📧 <strong>Comprobante enviado automáticamente a tu e-mail.</strong>
-      </div>
-
-      <div id="comprobanteVendedor" style="background: #ffffff; border: 1px solid #c8e6c9; border-radius: 10px; padding: 16px; margin: 15px 0; text-align: left; font-size: 14px;">
-        <h3 style="margin-top:0; border-bottom:1px solid #eee; padding-bottom:8px; text-align:center; color:#1b5e20;">🧾 Resumen del Pedido</h3>
-        <div id="contenidoComprobante"></div>
-      </div>
-
-      <button type="button" class="btn-nuevo" onclick="nuevoPedido()">➕ Ingresar nuevo pedido</button>
+      <h2 style="margin-top:0;">✅ ¡Pedido Enviado!</h2>
+      <p>El pedido fue registrado correctamente en el sistema y se envió una copia de respaldo a tu correo electrónico.</p>
+      <button class="btn-calcular" onclick="nuevoPedido()">➕ Cargar Otro Pedido</button>
     </div>
+
   </div>
 
   <script>
-    let pedido = [];
-    let URL_SCRIPT = "https://script.google.com/macros/s/AKfycbyAzVMQumeLklJArp6vnzTXD0MKdu5TuAkZNgjQU0vPk8Re5Bf4Lvya7AEHGbzWkadGSA/exec";
+    // URL de tu Apps Script
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby..." ; // Colocá aquí tu URL ejecutable de Apps Script si es necesario
+
+    let productosEnPedido = [];
+    let ultimoPrecioCalculado = "";
 
     window.onload = function() {
-      const mailGuardado = localStorage.getItem('emailVendedorRegistrado');
-      if (mailGuardado && document.getElementById("emailVendedor")) {
-        document.getElementById("emailVendedor").value = mailGuardado;
+      const emailGuardado = localStorage.getItem('emailVendedorRegistrado');
+      if (emailGuardado) {
+        document.getElementById('emailVendedor').value = emailGuardado;
       }
     };
 
-    function obtenerCodigoClienteActual() {
-      const urlParams = new URLSearchParams(window.location.search);
-      return (urlParams.get('cliente') || "REVENDEDOR").toUpperCase();
-    }
-
     function mostrarError(msg) {
-      const box = document.getElementById("errorBox");
-      box.textContent = msg;
-      box.style.display = "block";
-    }
-
-    function ocultarError() {
-      document.getElementById("errorBox").style.display = "none";
-    }
-
-    function agregarCortina() {
-      ocultarError();
-      const ancho = document.getElementById("ancho").value;
-      const alto = document.getElementById("alto").value;
-      const mecanismo = document.getElementById("mecanismo").value;
-      const doble = document.getElementById("dobleSistema").value;
-
-      if (!ancho || !alto) {
-        mostrarError("Por favor ingresá ancho y alto.");
-        return;
+      const box = document.getElementById('errorBox');
+      if (msg) {
+        box.innerText = msg;
+        box.style.display = 'block';
+      } else {
+        box.style.display = 'none';
       }
+    }
 
-      const btn = document.querySelector(".btn-agregar");
-      btn.disabled = true;
-      btn.textContent = "Calculando precio...";
+    function calcularPrecioWeb() {
+      mostrarError("");
+      const cliente = document.getElementById('clienteObra').value.trim();
+      const mecanismo = document.getElementById('mecanismo').value;
+      const ancho = document.getElementById('ancho').value;
+      const alto = document.getElementById('alto').value;
+      const doble = document.getElementById('dobleSistema').checked;
 
-      const url = URL_SCRIPT + "?action=calcularPrecio&cliente=" + encodeURIComponent(obtenerCodigoClienteActual()) +
-                  "&data=" + encodeURIComponent(JSON.stringify([mecanismo, ancho, alto, doble === "Sí", obtenerCodigoClienteActual()]));
+      if (!cliente) return mostrarError("Por favor ingresá el Cliente / Obra.");
+      if (!ancho || !alto) return mostrarError("Ingresá el ancho y el alto.");
 
-      fetch(url)
-        .then(r => r.json())
-        .then(res => {
-          btn.disabled = false;
-          btn.textContent = "➕ Calcular y Agregar al Pedido";
+      document.getElementById('resultadoPrecio').innerText = "Calculando...";
 
-          if (res.ok) {
-            pedido.push({
-              clienteObra: document.getElementById("clienteObra").value || "-",
-              mecanismo: mecanismo,
-              ancho: ancho,
-              alto: alto,
-              tipoTela: document.getElementById("tipoTela").value || "-",
-              color: document.getElementById("color").value || "-",
-              caida: document.getElementById("caida").value,
-              cadena: document.getElementById("cadena").value,
-              dobleSistema: doble,
-              precio: res.precio
-            });
-            actualizarTabla();
-          } else {
-            mostrarError(res.error || "Error al calcular el precio.");
-          }
-        })
-        .catch(err => {
-          btn.disabled = false;
-          btn.textContent = "➕ Calcular y Agregar al Pedido";
-          mostrarError("Error de conexión con el servidor.");
+      // Llamada simulada/vía Apps Script
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(function(precio) {
+            ultimoPrecioCalculado = precio;
+            document.getElementById('resultadoPrecio').innerText = "Precio: " + precio;
+            document.getElementById('btnAgregar').style.display = 'block';
+          })
+          .withFailureHandler(function(err) {
+            mostrarError("Error al calcular: " + err.message);
+            document.getElementById('resultadoPrecio').innerText = "";
+          })
+          .calcularPrecio(mecanismo, ancho, alto, doble, cliente);
+      } else {
+        // Fallback en caso de fetch API externa
+        const params = new URLSearchParams({
+          action: 'calcularPrecio',
+          data: JSON.stringify([mecanismo, ancho, alto, doble, cliente])
         });
-    }
-
-    function actualizarTabla() {
-      const tbody = document.getElementById("cuerpoTabla");
-      if (pedido.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#888;">No hay cortinas agregadas.</td></tr>';
-        document.getElementById("confirmarPedido").style.display = "none";
-        return;
+        
+        fetch(`${SCRIPT_URL}?${params.toString()}`)
+          .then(res => res.json())
+          .then(data => {
+            if(data.ok) {
+              ultimoPrecioCalculado = data.precio;
+              document.getElementById('resultadoPrecio').innerText = "Precio: " + data.precio;
+              document.getElementById('btnAgregar').style.display = 'block';
+            } else {
+              mostrarError(data.error || "Error al calcular precio.");
+              document.getElementById('resultadoPrecio').innerText = "";
+            }
+          })
+          .catch(err => {
+            mostrarError("Error de conexión con la planilla.");
+            document.getElementById('resultadoPrecio').innerText = "";
+          });
       }
-
-      let html = "";
-      pedido.forEach((p, i) => {
-        html += `<tr>
-          <td><b>${p.clienteObra}</b><br>${p.tipoTela} (${p.color})</td>
-          <td>${p.ancho} × ${p.alto} m</td>
-          <td><b>${p.precio}</b></td>
-          <td><button style="padding:4px 8px; background:#e53935; color:white; margin:0;" onclick="eliminar(${i})">X</button></td>
-        </tr>`;
-      });
-      tbody.innerHTML = html;
-      document.getElementById("confirmarPedido").style.display = "block";
     }
 
-    function eliminar(idx) {
-      pedido.splice(idx, 1);
-      actualizarTabla();
-    }
+    function agregarAlPedido() {
+      mostrarError("");
+      const cliente = document.getElementById('clienteObra').value.trim();
+      const mecanismo = document.getElementById('mecanismo').value;
+      const ancho = document.getElementById('ancho').value;
+      const alto = document.getElementById('alto').value;
+      const tela = document.getElementById('tipoTela').value;
+      const color = document.getElementById('colorTela').value;
+      const caida = document.getElementById('caida').value;
+      const cadena = document.getElementById('cadena').value;
+      const doble = document.getElementById('dobleSistema').checked ? "SI" : "NO";
+      const obs = document.getElementById('observaciones').value;
 
-    function confirmarPedido() {
-      if (pedido.length === 0) return;
-      ocultarError();
+      if (!ultimoPrecioCalculado) return mostrarError("Calculá el precio primero.");
 
-      const emailVal = document.getElementById("emailVendedor").value.trim();
-      if (emailVal) localStorage.setItem('emailVendedorRegistrado', emailVal);
+      const detObs = `Caída: ${caida} | Cadena: ${cadena}` + (obs ? ` | Obs: ${obs}` : "");
 
-      const btn = document.getElementById("confirmarPedido");
-      btn.disabled = true;
-      btn.textContent = "Guardando pedido y enviando mail...";
-
-      const productosParaGuardar = pedido.map(p => ({
-        mecanismo: p.mecanismo,
-        ancho: p.ancho,
-        alto: p.alto,
-        tela: p.tipoTela,
-        color: p.color,
-        doble: p.dobleSistema,
+      productosEnPedido.push({
+        mecanismo: mecanismo,
+        ancho: ancho,
+        alto: alto,
+        tela: tela,
+        color: color,
+        doble: doble,
         cantidad: 1,
-        observaciones: `Cliente/Obra: ${p.clienteObra} | Caída: ${p.caida} | Cadena: ${p.cadena}`,
-        precio: p.precio
-      }));
+        observaciones: detObs,
+        precio: ultimoPrecioCalculado
+      });
 
-      const url = URL_SCRIPT + "?action=guardarPedido&cliente=" + encodeURIComponent(obtenerCodigoClienteActual()) +
-                  "&email=" + encodeURIComponent(emailVal) +
-                  "&data=" + encodeURIComponent(JSON.stringify([obtenerCodigoClienteActual(), productosParaGuardar, emailVal]));
+      renderizarPedido();
+      
+      // Limpiar campos de la cortina
+      document.getElementById('ancho').value = "";
+      document.getElementById('alto').value = "";
+      document.getElementById('tipoTela').value = "";
+      document.getElementById('colorTela').value = "";
+      document.getElementById('observaciones').value = "";
+      document.getElementById('dobleSistema').checked = false;
+      document.getElementById('resultadoPrecio').innerText = "";
+      document.getElementById('btnAgregar').style.display = 'none';
+      ultimoPrecioCalculado = "";
+    }
 
-      fetch(url)
-        .then(r => r.json())
-        .then(res => {
-          if (res.ok) {
-            generarComprobanteVista(res.result, pedido);
-            document.getElementById("formularioCotizador").style.display = "none";
-            document.getElementById("mensajeExito").style.display = "block";
-            window.scrollTo({ top: 0, behavior: "smooth" });
+    function renderizarPedido() {
+      const container = document.getElementById('listaPedidoItems');
+      container.innerHTML = "";
+
+      productosEnPedido.forEach((p, i) => {
+        const item = document.createElement('div');
+        item.className = 'pedido-item';
+        item.innerHTML = `
+          <strong>Cortina #${i+1}: ${p.mecanismo} (${p.ancho}m × ${p.alto}m)</strong><br>
+          Tela: ${p.tela || '-'} (${p.color || '-'}) | Doble: ${p.doble}<br>
+          ${p.observaciones}<br>
+          <strong style="color:#1b5e20;">Precio: ${p.precio}</strong>
+        `;
+        container.appendChild(item);
+      });
+
+      document.getElementById('listaPedidoContainer').style.display = productosEnPedido.length > 0 ? 'block' : 'none';
+    }
+
+    function enviarPedidoWeb() {
+      mostrarError("");
+      const cliente = document.getElementById('clienteObra').value.trim();
+      const email = document.getElementById('emailVendedor').value.trim();
+
+      if (!cliente) return mostrarError("Falta el Cliente / Obra.");
+      if (productosEnPedido.length === 0) return mostrarError("No hay productos agregados.");
+
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(function() {
+            document.getElementById('contenidoFormulario').style.display = 'none';
+            document.getElementById('mensajeExito').style.display = 'block';
+          })
+          .withFailureHandler(function(err) {
+            mostrarError("Error al guardar pedido: " + err.message);
+          })
+          .guardarPedido(cliente, productosEnPedido, email);
+      } else {
+        const payload = {
+          vendedor: cliente,
+          emailVendedor: email,
+          productos: productosEnPedido
+        };
+
+        fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.ok) {
+            document.getElementById('contenidoFormulario').style.display = 'none';
+            document.getElementById('mensajeExito').style.display = 'block';
           } else {
-            mostrarError(res.error || "No se pudo guardar el pedido.");
-            btn.disabled = false;
-            btn.textContent = "✅ Confirmar y Enviar Pedido";
+            mostrarError(data.error || "Error al guardar el pedido.");
           }
         })
         .catch(err => {
-          mostrarError("Error al conectar con Google Script.");
-          btn.disabled = false;
-          btn.textContent = "✅ Confirmar y Enviar Pedido";
+          mostrarError("Error al enviar el pedido.");
         });
-    }
-
-    function generarComprobanteVista(numPedido, productos) {
-      document.getElementById("numeroPedidoTexto").textContent = "Nº de Pedido: " + numPedido;
-      let html = "";
-      productos.forEach((p, i) => {
-        html += `<div style="margin-bottom:10px; border-bottom:1px solid #eee; padding-bottom:8px;">
-          <b>Cortina ${i+1}:</b> ${p.clienteObra}<br>
-          • Medida: ${p.ancho} × ${p.alto} m<br>
-          • Tela: ${p.tipoTela} (${p.color})<br>
-          • <b>Precio: ${p.precio}</b>
-        </div>`;
-      });
-      document.getElementById("contenidoComprobante").innerHTML = html;
+      }
     }
 
     function nuevoPedido() {
-      pedido = [];
-      actualizarTabla();
-      document.getElementById("mensajeExito").style.display = "none";
-      document.getElementById("formularioCotizador").style.display = "block";
-      const btn = document.getElementById("confirmarPedido");
-      btn.disabled = false;
-      btn.textContent = "✅ Confirmar y Enviar Pedido";
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      productosEnPedido = [];
+      document.getElementById('listaPedidoItems').innerHTML = "";
+      document.getElementById('listaPedidoContainer').style.display = 'none';
+      document.getElementById('contenidoFormulario').style.display = 'block';
+      document.getElementById('mensajeExito').style.display = 'none';
+      document.getElementById('clienteObra').value = "";
     }
   </script>
 </body>
