@@ -712,6 +712,17 @@
               ]
             );
           },
+          calcularPrecioBandas: function(ancho, alto, soporte, cliente) {
+  executeCall(
+    "calcularPrecioBandas",
+    [
+      ancho,
+      alto,
+      soporte,
+      cliente || obtenerCodigoClienteActual()
+    ]
+  );
+},
           guardarPedido: function(cliente, productos) {
             executeCall(
               "guardarPedido",
