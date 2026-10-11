@@ -1389,6 +1389,70 @@
       categoria === "BANDAS" ? "block" : "none";
   }
 }
+    function calcularBandas() {
+  const codigoCliente = obtenerCodigoClienteActual();
+  const ancho = document.getElementById("anchoBandas").value.trim();
+  const alto = document.getElementById("altoBandas").value.trim();
+  const soporte = document.getElementById("soporteBandas").value;
+
+  if (!codigoCliente) {
+    mostrarError("Ingresá el Código de cliente / Vendedor.");
+    return;
+  }
+
+  if (!ancho || !alto || !soporte) {
+    mostrarError("Completá ancho, alto y soporte.");
+    return;
+  }
+
+  const boton = document.getElementById("botonBandas");
+  const resultado = document.getElementById("resultadoBandas");
+
+  ocultarError();
+  boton.disabled = true;
+  boton.textContent = "Calculando...";
+
+  google.script.run
+    .withSuccessHandler(function(precio) {
+      resultado.textContent = "Precio: " + precio;
+      resultado.style.display = "block";
+
+      document.getElementById("datosPedidoBandas").style.display = "block";
+
+      boton.disabled = false;
+      boton.textContent = "Calcular precio";
+    })
+    .withFailureHandler(function(err) {
+      mostrarError(
+        err && err.message
+          ? err.message
+          : "No se pudo calcular el precio de Bandas Verticales."
+      );
+
+      boton.disabled = false;
+      boton.textContent = "Calcular precio";
+    })
+    .calcularPrecioBandas(
+      ancho,
+      alto,
+      soporte,
+      codigoCliente
+    );
+}
+    function invalidarCalculoBandas() {
+  const resultado = document.getElementById("resultadoBandas");
+  const datosPedido = document.getElementById("datosPedidoBandas");
+
+  if (resultado) {
+    resultado.style.display = "none";
+  }
+
+  if (datosPedido) {
+    datosPedido.style.display = "none";
+  }
+
+  ocultarError();
+}
   </script>
 
 </body>
