@@ -279,7 +279,19 @@
     placeholder="Ejemplo: CLI-102"
     oninput="invalidarCalculo()"
   >
-
+<label for="categoria">Categorías</label>
+  <select id="categoria" onchange="cambiarCategoria()">
+    <option value="ROLLER">Cortinas Roller</option>
+    <option value="BANDAS">Bandas Verticales</option>
+    <option value="PANEL_ORIENTAL">Panel Oriental</option>
+    <option value="TRADICIONALES">Tradicionales</option>
+    <option value="CORTE_TELA_ROLLER">Corte de tela para cortinas Roller</option>
+    <option value="CORTINAS">Cortinas</option>
+    <option value="PANO_FIJO">Paño fijo</option>
+    <option value="PANELES">Paneles</option>
+    <option value="BARRA_HIERRO">Barra de hierro negro 3/4</option>
+  </select>
+  <div id="formularioRoller">
   <label for="ancho">Ancho final</label>
   <input
     id="ancho"
@@ -397,7 +409,119 @@
       Agregar al pedido
     </button>
   </div>
+</div>
+  <!-- FORMULARIO BANDAS VERTICALES -->
+<div id="formularioBandas" style="display:none;">
 
+  <label for="anchoBandas">Ancho final</label>
+  <input
+    id="anchoBandas"
+    type="text"
+    inputmode="decimal"
+    placeholder="Ejemplo: 1,80"
+    oninput="invalidarCalculoBandas()"
+  >
+
+  <label for="altoBandas">Alto final</label>
+  <input
+    id="altoBandas"
+    type="text"
+    inputmode="decimal"
+    placeholder="Ejemplo: 2,10"
+    oninput="invalidarCalculoBandas()"
+  >
+
+  <label for="soporteBandas">Soporte</label>
+  <select
+    id="soporteBandas"
+    onchange="invalidarCalculoBandas()"
+  >
+    <option value="">Seleccionar</option>
+    <option value="Pared">Pared</option>
+    <option value="Techo">Techo</option>
+  </select>
+
+  <label for="tipoTelaBandas">Tipo de tela</label>
+  <select
+    id="tipoTelaBandas"
+    onchange="invalidarCalculoBandas()"
+  >
+    <option value="">Seleccionar</option>
+    <option value="BLACKOUT_PREMIUM">Blackout Premium</option>
+    <option value="SCREEN_PREMIUM">Screen Premium</option>
+    <option value="TRASLUCIDO">Translúcido</option>
+  </select>
+
+  <label for="mecanismoBandas">Mecanismo</label>
+  <select id="mecanismoBandas" disabled>
+    <option value="A_CORDON" selected>A cordón</option>
+  </select>
+
+  <button
+    id="botonBandas"
+    type="button"
+    onclick="calcularBandas()"
+  >
+    Calcular precio
+  </button>
+
+  <div
+    id="resultadoBandas"
+    style="
+      display:none;
+      margin-top:24px;
+      padding:18px;
+      border-radius:8px;
+      background:#eee8df;
+      text-align:center;
+      font-size:25px;
+      font-weight:bold;
+    "
+  ></div>
+
+  <div id="datosPedidoBandas" style="display:none; margin-top:20px;">
+
+    <label for="clienteObraBandas">Cliente / Obra</label>
+    <input
+      id="clienteObraBandas"
+      type="text"
+      placeholder="Ej.: Casa González"
+    >
+
+    <label for="colorBandas">Color</label>
+    <input
+      id="colorBandas"
+      type="text"
+      placeholder="Ingresar color"
+    >
+
+    <label for="aperturaBandas">Apertura</label>
+    <select id="aperturaBandas">
+      <option value="">Seleccionar</option>
+      <option value="IZQUIERDA">Izquierda</option>
+      <option value="DERECHA">Derecha</option>
+      <option value="CENTRAL">Central</option>
+      <option value="BILATERAL">Bilateral</option>
+    </select>
+
+    <label for="cadenaBandas">Cadena</label>
+    <select id="cadenaBandas">
+      <option value="">Seleccionar</option>
+      <option value="IZQUIERDA">Izquierda</option>
+      <option value="DERECHA">Derecha</option>
+    </select>
+
+    <button
+      id="agregarPedidoBandas"
+      type="button"
+      onclick="agregarBandasAlPedido()"
+    >
+      Agregar al pedido
+    </button>
+
+  </div>
+
+</div>
   <div id="resumenPedido">
     <h2>Pedido</h2>
     <div id="listaPedido"></div>
@@ -1240,6 +1364,21 @@
       document.getElementById("modalPedidos").style.display =
         "none";
     }
+    function cambiarCategoria() {
+  const categoria = document.getElementById("categoria").value;
+  const formularioRoller = document.getElementById("formularioRoller");
+  const formularioBandas = document.getElementById("formularioBandas");
+
+  if (formularioRoller) {
+    formularioRoller.style.display =
+      categoria === "ROLLER" ? "block" : "none";
+  }
+
+  if (formularioBandas) {
+    formularioBandas.style.display =
+      categoria === "BANDAS" ? "block" : "none";
+  }
+}
   </script>
 
 </body>
