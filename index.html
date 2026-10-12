@@ -1107,11 +1107,11 @@ function actualizarResumenPedido() {
   let html = "";
 
   pedido.forEach(function(p, i) {
-    const esBandas = p.tipoCortina === "Bandas Verticales";
+  const esBandas = p.categoria === "BANDAS";
 
     html +=
       '<div class="producto-pedido">' +
-      "<b>" + (p.tipoCortina || "Cortina Roller") + " " + (i + 1) + "</b><br>" +
+      "<b>" + (esBandas ? "Bandas Verticales" : "Cortina Roller") + " " + (i + 1) + "</b><br>" +
       "Cliente / Obra: " + p.clienteObra + "<br>" +
       "Tela: " + p.tipoTela + "<br>" +
       "Color: " + p.color + "<br>" +
