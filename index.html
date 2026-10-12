@@ -1340,9 +1340,11 @@ function actualizarResumenPedido() {
               html +=
                 '<div style="margin-top:12px; padding-top:10px; border-top:1px solid #ddd;">' +
 
-                "<b>Cortina " +
-                (indice + 1) +
-                "</b><br>" +
+                "<b>" +
+(item.tipoCortina || "Cortina Roller") +
+" " +
+(indice + 1) +
+"</b><br>" +
 
                 "Mecanismo: " +
                 (item.mecanismo || "") +
