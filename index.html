@@ -1183,23 +1183,35 @@ function actualizarResumenPedido() {
           color: p.color,
           doble: p.dobleSistema,
           cantidad: 1,
-          observaciones:
-            "Cliente / Obra: " +
-            p.clienteObra +
-            " | Caída: " +
-            p.caida +
-            " | Cadena: " +
-            p.cadena +
-            (
-              p.dobleSistema === "Sí"
-                ? " | Segunda Tela: " +
-                  p.tipoTela2 +
-                  " (" +
-                  p.color2 +
-                  ")"
-                : ""
-            ),
-          precio: p.precio
+        observaciones:
+  p.categoria === "BANDAS"
+    ? (
+        "Cliente / Obra: " +
+        p.clienteObra +
+        " | Soporte: " +
+        p.soporte +
+        " | Apertura: " +
+        p.apertura +
+        " | Cadena: " +
+        p.cadena
+      )
+    : (
+        "Cliente / Obra: " +
+        p.clienteObra +
+        " | Caída: " +
+        p.caida +
+        " | Cadena: " +
+        p.cadena +
+        (
+          p.dobleSistema === "Sí"
+            ? " | Segunda Tela: " +
+              p.tipoTela2 +
+              " (" +
+              p.color2 +
+              ")"
+            : ""
+        )
+      ),
         };
       });
 
