@@ -640,6 +640,7 @@
       const inputCodigo = document.getElementById("codigoClienteInput");
       if (inputCodigo && CODIGO_CLIENTE) {
         inputCodigo.value = CODIGO_CLIENTE.trim().toUpperCase();
+        cargarCategoriasHabilitadas();
       }
     });
 
@@ -717,6 +718,14 @@
       ancho,
       alto,
       soporte,
+      cliente || obtenerCodigoClienteActual()
+    ]
+  );
+},
+          obtenerCategoriasHabilitadas: function(cliente) {
+  executeCall(
+    "obtenerCategoriasHabilitadas",
+    [
       cliente || obtenerCodigoClienteActual()
     ]
   );
@@ -1413,6 +1422,47 @@ function actualizarResumenPedido() {
     formularioBandas.style.display =
       categoria === "BANDAS" ? "block" : "none";
   }
+}
+    function cargarCategoriasHabilitadas() {
+  const codigo = obtenerCodigoClienteActual();
+
+  if (!codigo) {
+    return;
+  }
+
+  google.script.run
+    .withSuccessHandler(function(permisos) {
+      const selector = document.getElementById("categoria");
+
+      Array.from(selector.options).forEach(function(opcion) {
+        opcion.hidden = permisos[opcion.value] !== true;
+        opcion.disabled = permisos[opcion.value] !== true;
+      });
+
+      const seleccionActual = selector.options[selector.selectedIndex];
+
+      if (!seleccionActual || seleccionActual.disabled) {
+        const primeraHabilitada = Array.from(selector.options).find(
+          function(opcion) {
+            return !opcion.disabled;
+          }
+        );
+
+        if (primeraHabilitada) {
+          selector.value = primeraHabilitada.value;
+        }
+      }
+
+      cambiarCategoria();
+    })
+    .withFailureHandler(function(err) {
+      mostrarError(
+        err && err.message
+          ? err.message
+          : "No se pudieron cargar las categorías habilitadas."
+      );
+    })
+    .obtenerCategoriasHabilitadas(codigo);
 }
     function calcularBandas() {
   const codigoCliente = obtenerCodigoClienteActual();
