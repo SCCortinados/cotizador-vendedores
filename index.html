@@ -442,9 +442,9 @@
 
   <label for="tipoTelaBandas">Tipo de tela</label>
   <select
-    id="tipoTelaBandas"
-    onchange="invalidarCalculoBandas()"
-  >
+  id="tipoTelaBandas"
+  onchange="actualizarColoresBandas(); invalidarCalculoBandas();"
+>
     <option value="">Seleccionar</option>
     <option value="BLACKOUT_PREMIUM">Blackout Premium</option>
     <option value="SCREEN_PREMIUM">Screen Premium</option>
@@ -487,12 +487,10 @@
       placeholder="Ej.: Casa González"
     >
 
-    <label for="colorBandas">Color</label>
-    <input
-      id="colorBandas"
-      type="text"
-      placeholder="Ingresar color"
-    >
+<label for="colorBandas">Color</label>
+<select id="colorBandas">
+  <option value="">Seleccionar</option>
+</select>
 
     <label for="aperturaBandas">Apertura</label>
     <select id="aperturaBandas">
@@ -1452,6 +1450,34 @@
   }
 
   ocultarError();
+}
+    function actualizarColoresBandas() {
+  const tipo = document.getElementById("tipoTelaBandas").value;
+  const color = document.getElementById("colorBandas");
+
+  color.innerHTML = '<option value="">Seleccionar</option>';
+
+  if (tipo === "BLACKOUT_PREMIUM") {
+    color.innerHTML +=
+      '<option value="BLANCO">Blanco</option>' +
+      '<option value="NATURAL">Natural</option>' +
+      '<option value="BEIGE">Beige</option>' +
+      '<option value="GRIS">Gris</option>';
+  }
+
+  if (tipo === "SCREEN_PREMIUM") {
+    color.innerHTML +=
+      '<option value="BLANCO">Blanco</option>' +
+      '<option value="NATURAL">Natural</option>' +
+      '<option value="GRIS">Gris</option>';
+  }
+
+  if (tipo === "TRASLUCIDO") {
+    color.innerHTML +=
+      '<option value="SB15">Blanco SB15</option>' +
+      '<option value="SB19">Natural SB19</option>' +
+      '<option value="SB16">Piedra SB16</option>';
+  }
 }
   </script>
 
