@@ -1482,7 +1482,12 @@ function actualizarResumenPedido() {
     mostrarError("Completá ancho, alto y soporte.");
     return;
   }
+const altoNumero = parseFloat(alto.replace(",", "."));
 
+if (altoNumero > 3.50) {
+  mostrarError("El alto ingresado supera el máximo recomendado de 3,50 m. Consultar con SC Cortinados para cotizar esta medida.");
+  return;
+}
   const boton = document.getElementById("botonBandas");
   const resultado = document.getElementById("resultadoBandas");
 
