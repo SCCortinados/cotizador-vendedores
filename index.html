@@ -288,7 +288,7 @@
     <option value="CORTE_TELA_ROLLER">Corte de tela para cortinas Roller</option>
    <option value="CORTINAS_PANO_FIJO">Cortinas Paño Fijo</option>
     <option value="RIELES">Rieles</option>
-    <option value="BARRA_HIERRO">Barra de hierro negro 3/4</option>
+    <option value="BARRAL_HIERRO">Barral de hierro negro 3/4</option>
   </select>
   <div id="formularioRoller">
   <label for="ancho">Ancho final</label>
@@ -446,9 +446,9 @@
   onchange="actualizarColoresBandas(); invalidarCalculoBandas();"
 >
     <option value="">Seleccionar</option>
-    <option value="BLACKOUT_PREMIUM">Blackout Premium</option>
-    <option value="SCREEN_PREMIUM">Screen Premium</option>
-    <option value="TRASLUCIDO">Translúcido</option>
+<option value="BLACKOUT_PREMIUM">Blackout Premium</option>
+<option value="SUNSCREEN_PREMIUM">Sunscreen Premium</option>
+<option value="TRASLUCIDA">Translúcida</option>
   </select>
 
   <label for="mecanismoBandas">Mecanismo</label>
@@ -1103,44 +1103,55 @@
       actualizarResumenPedido();
     }
 
-    function actualizarResumenPedido() {
-      let html = "";
+function actualizarResumenPedido() {
+  let html = "";
 
-      pedido.forEach(function(p, i) {
+  pedido.forEach(function(p, i) {
+    const esBandas = p.tipoCortina === "Bandas Verticales";
+
+    html +=
+      '<div class="producto-pedido">' +
+      "<b>" + (p.tipoCortina || "Cortina Roller") + " " + (i + 1) + "</b><br>" +
+      "Cliente / Obra: " + p.clienteObra + "<br>" +
+      "Tela: " + p.tipoTela + "<br>" +
+      "Color: " + p.color + "<br>" +
+      "Mecanismo: " + p.mecanismo + "<br>" +
+      "Medida: " + p.ancho + " × " + p.alto + "<br>";
+
+    if (esBandas) {
+      html +=
+        "Soporte: " + p.soporte + "<br>" +
+        "Apertura: " + p.apertura + "<br>" +
+        "Cadena: " + p.cadena + "<br>";
+    } else {
+      html +=
+        "Caída: " + p.caida + "<br>" +
+        "Cadena: " + p.cadena + "<br>" +
+        "Doble sistema: " + p.dobleSistema + "<br>";
+
+      if (p.dobleSistema === "Sí") {
         html +=
-          '<div class="producto-pedido">' +
-          "<b>Cortina " + (i + 1) + "</b><br>" +
-          "Cliente / Obra: " + p.clienteObra + "<br>" +
-          "Tela: " + p.tipoTela + "<br>" +
-          "Color: " + p.color + "<br>" +
-          "Mecanismo: " + p.mecanismo + "<br>" +
-          "Caída: " + p.caida + "<br>" +
-          "Cadena: " + p.cadena + "<br>" +
-          "Medida: " + p.ancho + " × " + p.alto + "<br>" +
-          "Doble sistema: " + p.dobleSistema + "<br>";
-
-        if (p.dobleSistema === "Sí") {
-          html +=
-            "Segunda tela: " + p.tipoTela2 + "<br>" +
-            "Segundo color: " + p.color2 + "<br>" +
-            "Segundo mecanismo: " + p.mecanismo2 + "<br>";
-        }
-
-        html += "<b>" + p.precio + "</b><br>";
-
-        html +=
-          '<button type="button" class="btn-eliminar" onclick="eliminarDelPedido(' +
-          i +
-          ')">🗑️ Eliminar</button>';
-
-        html += "</div>";
-      });
-
-      document.getElementById("listaPedido").innerHTML = html;
-
-      document.getElementById("resumenPedido").style.display =
-        pedido.length > 0 ? "block" : "none";
+          "Segunda tela: " + p.tipoTela2 + "<br>" +
+          "Segundo color: " + p.color2 + "<br>" +
+          "Segundo mecanismo: " + p.mecanismo2 + "<br>";
+      }
     }
+
+    html += "<b>" + p.precio + "</b><br>";
+
+    html +=
+      '<button type="button" class="btn-eliminar" onclick="eliminarDelPedido(' +
+      i +
+      ')">🗑️ Eliminar</button>';
+
+    html += "</div>";
+  });
+
+  document.getElementById("listaPedido").innerHTML = html;
+
+  document.getElementById("resumenPedido").style.display =
+    pedido.length > 0 ? "block" : "none";
+}
 
     function nuevoPedido() {
       window.location.reload();
@@ -1162,6 +1173,9 @@
 
       const productosParaGuardar = pedido.map(function(p) {
         return {
+          tipoCortina: p.categoria === "BANDAS"
+  ? "Bandas Verticales"
+  : "Cortina Roller",
           mecanismo: p.mecanismo,
           ancho: p.ancho,
           alto: p.alto,
@@ -1465,19 +1479,71 @@
       '<option value="GRIS">Gris</option>';
   }
 
-  if (tipo === "SCREEN_PREMIUM") {
+  if (tipo === "SUNSCREEN_PREMIUM") {
     color.innerHTML +=
       '<option value="BLANCO">Blanco</option>' +
       '<option value="NATURAL">Natural</option>' +
       '<option value="GRIS">Gris</option>';
   }
 
-  if (tipo === "TRASLUCIDO") {
+  if (tipo === "TRASLUCIDA") {
     color.innerHTML +=
       '<option value="SB15">Blanco SB15</option>' +
       '<option value="SB19">Natural SB19</option>' +
       '<option value="SB16">Piedra SB16</option>';
   }
+}
+    function agregarBandasAlPedido() {
+  const clienteObra =
+    document.getElementById("clienteObraBandas").value.trim();
+
+  const tipoTela =
+    document.getElementById("tipoTelaBandas").value;
+
+  const color =
+    document.getElementById("colorBandas").value;
+
+  const soporte =
+    document.getElementById("soporteBandas").value;
+
+  const apertura =
+    document.getElementById("aperturaBandas").value;
+
+  const cadena =
+    document.getElementById("cadenaBandas").value;
+
+  if (
+    !clienteObra ||
+    !tipoTela ||
+    !color ||
+    !soporte ||
+    !apertura ||
+    !cadena
+  ) {
+    mostrarError(
+      "Para agregar al pedido, completá Cliente / Obra, tipo de tela, color, soporte, apertura y cadena."
+    );
+    return;
+  }
+
+  ocultarError();
+
+  const item = {
+    categoria: "BANDAS",
+    clienteObra: clienteObra,
+    tipoTela: textoSeleccionado("tipoTelaBandas"),
+    color: textoSeleccionado("colorBandas"),
+    mecanismo: "A cordón",
+    soporte: textoSeleccionado("soporteBandas"),
+    apertura: textoSeleccionado("aperturaBandas"),
+    cadena: textoSeleccionado("cadenaBandas"),
+    ancho: document.getElementById("anchoBandas").value.trim(),
+    alto: document.getElementById("altoBandas").value.trim(),
+    precio: document.getElementById("resultadoBandas").textContent
+  };
+
+  pedido.push(item);
+  actualizarResumenPedido();
 }
   </script>
 
