@@ -316,8 +316,11 @@
     <option value="BLACKOUT_PREMIUM">Blackout Premium</option>
     <option value="SUNSCREEN_PREMIUM">Sunscreen Premium</option>
     <option value="TRASLUCIDA">Translúcida</option>
+<option value="COLECCION_AMPLIADA">Colección Ampliada</option>
   </select>
-
+<div id="avisoColeccionAmpliada" style="display:none; margin-top:6px; font-size:13px;">
+  Variedad sujeta a disponibilidad.
+</div>
   <label for="mecanismo">Mecanismo</label>
   <select
     id="mecanismo"
@@ -361,7 +364,12 @@
     <select id="color">
       <option value="">Seleccionar</option>
     </select>
-
+<input
+  id="colorColeccionAmpliada"
+  type="text"
+  placeholder="Escribí el color"
+  style="display:none;"
+>
     <div id="segundaCortina">
       <h2>Segunda cortina (Doble Sistema)</h2>
 
@@ -787,7 +795,21 @@
       const tipo = document.getElementById("tipoTela").value;
       const mecanismo = document.getElementById("mecanismo");
       const color = document.getElementById("color");
+      const colorLibre = document.getElementById("colorColeccionAmpliada");
 
+if (tipo === "COLECCION_AMPLIADA") {
+  color.style.display = "none";
+  colorLibre.style.display = "block";
+} else {
+  color.style.display = "block";
+  colorLibre.style.display = "none";
+  colorLibre.value = "";
+}
+const avisoColeccion = document.getElementById("avisoColeccionAmpliada");
+
+if (avisoColeccion) {
+  avisoColeccion.style.display = tipo === "COLECCION_AMPLIADA" ? "block" : "none";
+}
       mecanismo.innerHTML = '<option value="">Seleccionar</option>';
       color.innerHTML = '<option value="">Seleccionar</option>';
 
@@ -809,7 +831,11 @@
           '<option value="32 PREMIUM">32 Premium</option>' +
           '<option value="38 PREMIUM">38 Premium</option>';
       }
-
+if (tipo === "COLECCION_AMPLIADA") {
+  mecanismo.innerHTML +=
+    '<option value="32 PREMIUM">32 Premium</option>' +
+    '<option value="38 PREMIUM">38 Premium</option>';
+}
       if (tipo === "SUNSCREEN_PREMIUM") {
         color.innerHTML +=
           '<option value="BLANCO">Blanco</option>' +
@@ -1006,8 +1032,10 @@
       const tipoTela =
         document.getElementById("tipoTela").value;
 
-      const color =
-        document.getElementById("color").value;
+    const color =
+  tipoTela === "COLECCION_AMPLIADA"
+    ? document.getElementById("colorColeccionAmpliada").value.trim()
+    : document.getElementById("color").value;
 
       const mecanismo =
         document.getElementById("mecanismo").value;
