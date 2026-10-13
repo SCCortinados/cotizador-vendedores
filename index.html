@@ -958,29 +958,22 @@ if (tipo.startsWith("AMPLIADA_")) {
 
       const anchoNumero = parseFloat(ancho.replace(",", "."));
 
-      if (
-        tipoTela === "BLACKOUT_PLUS" &&
-        !isNaN(anchoNumero) &&
-        anchoNumero > 2.5
-      ) {
-        mostrarError(
-          "Blackout Plus solo se fabrica hasta 2,50 m de ancho. Seleccioná Blackout Premium."
-        );
-        invalidarCalculo();
-        return;
-      }
-
-      if (
-        tipoTela === "TRASLUCIDA" &&
-        !isNaN(anchoNumero) &&
-        anchoNumero > 2.5
-      ) {
-        mostrarError(
-          "La tela Traslúcida solo se fabrica hasta 2,50 m de ancho."
-        );
-        invalidarCalculo();
-        return;
-      }
+    if (
+  (
+    tipoTela === "BLACKOUT_PLUS" ||
+    tipoTela === "TRASLUCIDA" ||
+    tipoTela === "AMPLIADA_TRANSLUCIDA" ||
+    tipoTela === "AMPLIADA_BLACKOUT_DECORATIVO"
+  ) &&
+  !isNaN(anchoNumero) &&
+  anchoNumero > 2.5
+) {
+  mostrarError(
+    "Esta tela se presenta en rollos de 2,50 m de ancho, por lo que el ancho final de la cortina no puede superar esa medida."
+  );
+  invalidarCalculo();
+  return;
+}
 
       const dobleSistema =
         document.getElementById("dobleSistema").checked;
