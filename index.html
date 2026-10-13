@@ -804,9 +804,12 @@ calcularPrecio: function(mecanismo, ancho, alto, dobleSistema, cliente, tipoTela
 
 if (tipo === "AMPLIADA_BLACKOUT_NEGRO") {
   color.style.display = "none";
-  colorLibre.style.display = "none";
+  colorLibre.style.display = "block";
   colorLibre.value = "Negro";
+  colorLibre.readOnly = true;
+}
 } else if (tipo.startsWith("AMPLIADA_")) {
+      colorLibre.readOnly = false;
   color.style.display = "none";
   colorLibre.style.display = "block";
   colorLibre.value = "";
@@ -1103,7 +1106,7 @@ if (tipo.startsWith("AMPLIADA_")) {
       const item = {
         clienteObra: clienteObra,
         tipoTela: textoSeleccionado("tipoTela"),
-        color: textoSeleccionado("color"),
+        color: color,
         mecanismo: textoSeleccionado("mecanismo"),
         caida: textoSeleccionado("caida"),
         cadena: textoSeleccionado("cadena"),
