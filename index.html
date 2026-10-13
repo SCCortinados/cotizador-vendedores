@@ -968,11 +968,11 @@ if (tipo.startsWith("AMPLIADA_")) {
   !isNaN(anchoNumero) &&
   anchoNumero > 2.5
 ) {
-  mostrarError(
-    "Esta tela se presenta en rollos de 2,50 m de ancho, por lo que el ancho final de la cortina no puede superar esa medida."
-  );
-  invalidarCalculo();
-  return;
+invalidarCalculo();
+mostrarError(
+  "Esta tela se presenta en rollos de 2,50 m de ancho, por lo que el ancho final de la cortina no puede superar esa medida."
+);
+return;
 }
 
       const dobleSistema =
