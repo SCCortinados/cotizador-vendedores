@@ -316,7 +316,11 @@
     <option value="BLACKOUT_PREMIUM">Blackout Premium</option>
     <option value="SUNSCREEN_PREMIUM">Sunscreen Premium</option>
     <option value="TRASLUCIDA">Translúcida</option>
-<option value="COLECCION_AMPLIADA">Colección Ampliada</option>
+<option value="AMPLIADA_BLACKOUT_NEGRO">Colección Ampliada - Blackout negro</option>
+<option value="AMPLIADA_TRANSLUCIDA">Colección Ampliada - Translúcida</option>
+<option value="AMPLIADA_SUNSCREEN_1">Colección Ampliada - Sunscreen 1%</option>
+<option value="AMPLIADA_BLACKOUT_DECORATIVO">Colección Ampliada - Blackout decorativo</option>
+<option value="AMPLIADA_SUNSCREEN_DECORATIVA">Colección Ampliada - Sunscreen decorativa</option>
   </select>
 <div id="avisoColeccionAmpliada" style="display:none; margin-top:6px; font-size:13px;">
   Variedad sujeta a disponibilidad.
@@ -798,9 +802,14 @@ calcularPrecio: function(mecanismo, ancho, alto, dobleSistema, cliente, tipoTela
       const color = document.getElementById("color");
       const colorLibre = document.getElementById("colorColeccionAmpliada");
 
-if (tipo === "COLECCION_AMPLIADA") {
+if (tipo === "AMPLIADA_BLACKOUT_NEGRO") {
+  color.style.display = "none";
+  colorLibre.style.display = "none";
+  colorLibre.value = "Negro";
+} else if (tipo.startsWith("AMPLIADA_")) {
   color.style.display = "none";
   colorLibre.style.display = "block";
+  colorLibre.value = "";
 } else {
   color.style.display = "block";
   colorLibre.style.display = "none";
@@ -809,7 +818,7 @@ if (tipo === "COLECCION_AMPLIADA") {
 const avisoColeccion = document.getElementById("avisoColeccionAmpliada");
 
 if (avisoColeccion) {
-  avisoColeccion.style.display = tipo === "COLECCION_AMPLIADA" ? "block" : "none";
+ avisoColeccion.style.display = tipo.startsWith("AMPLIADA_") ? "block" : "none";
 }
       mecanismo.innerHTML = '<option value="">Seleccionar</option>';
       color.innerHTML = '<option value="">Seleccionar</option>';
@@ -832,7 +841,7 @@ if (avisoColeccion) {
           '<option value="32 PREMIUM">32 Premium</option>' +
           '<option value="38 PREMIUM">38 Premium</option>';
       }
-if (tipo === "COLECCION_AMPLIADA") {
+if (tipo.startsWith("AMPLIADA_")) {
   mecanismo.innerHTML +=
     '<option value="32 PREMIUM">32 Premium</option>' +
     '<option value="38 PREMIUM">38 Premium</option>';
@@ -1035,9 +1044,11 @@ if (tipo === "COLECCION_AMPLIADA") {
         document.getElementById("tipoTela").value;
 
     const color =
-  tipoTela === "COLECCION_AMPLIADA"
-    ? document.getElementById("colorColeccionAmpliada").value.trim()
-    : document.getElementById("color").value;
+  tipoTela === "AMPLIADA_BLACKOUT_NEGRO"
+    ? "Negro"
+    : tipoTela.startsWith("AMPLIADA_")
+      ? document.getElementById("colorColeccionAmpliada").value.trim()
+      : document.getElementById("color").value;
 
       const mecanismo =
         document.getElementById("mecanismo").value;
