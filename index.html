@@ -461,6 +461,11 @@
 <option value="BLACKOUT_PREMIUM">Blackout Premium</option>
 <option value="SUNSCREEN_PREMIUM">Sunscreen Premium</option>
 <option value="TRASLUCIDA">Translúcida</option>
+    <option value="AMPLIADA_BLACKOUT_NEGRO">Colección Ampliada - Blackout negro</option>
+<option value="AMPLIADA_TRANSLUCIDA">Colección Ampliada - Translúcida</option>
+<option value="AMPLIADA_SUNSCREEN_1">Colección Ampliada - Sunscreen 1%</option>
+<option value="AMPLIADA_BLACKOUT_DECORATIVO">Colección Ampliada - Blackout decorativo</option>
+<option value="AMPLIADA_SUNSCREEN_DECORATIVA">Colección Ampliada - Sunscreen decorativa</option>
   </select>
 
   <label for="mecanismoBandas">Mecanismo</label>
@@ -503,6 +508,12 @@
 <select id="colorBandas">
   <option value="">Seleccionar</option>
 </select>
+    <input
+  id="colorColeccionAmpliadaBandas"
+  type="text"
+  placeholder="Escribí el color"
+  style="display:none;"
+>
 
     <label for="aperturaBandas">Apertura</label>
     <select id="aperturaBandas">
@@ -725,14 +736,15 @@ calcularPrecio: function(mecanismo, ancho, alto, dobleSistema, cliente, tipoTela
     ]
   );
 },
-          calcularPrecioBandas: function(ancho, alto, soporte, cliente) {
+calcularPrecioBandas: function(ancho, alto, soporte, cliente, tipoTela) {
   executeCall(
     "calcularPrecioBandas",
     [
       ancho,
       alto,
       soporte,
-      cliente || obtenerCodigoClienteActual()
+      cliente || obtenerCodigoClienteActual(),
+      tipoTela
     ]
   );
 },
@@ -1508,7 +1520,7 @@ function actualizarResumenPedido() {
   const ancho = document.getElementById("anchoBandas").value.trim();
   const alto = document.getElementById("altoBandas").value.trim();
   const soporte = document.getElementById("soporteBandas").value;
-
+const tipoTela = document.getElementById("tipoTelaBandas").value;
   if (!codigoCliente) {
     mostrarError("Ingresá el Código de cliente / Vendedor.");
     return;
@@ -1555,7 +1567,8 @@ if (altoNumero > 3.50) {
       ancho,
       alto,
       soporte,
-      codigoCliente
+      codigoCliente,
+    tipoTela
     );
 }
     function invalidarCalculoBandas() {
@@ -1575,7 +1588,26 @@ if (altoNumero > 3.50) {
     function actualizarColoresBandas() {
   const tipo = document.getElementById("tipoTelaBandas").value;
   const color = document.getElementById("colorBandas");
+const colorLibre = document.getElementById("colorColeccionAmpliadaBandas");
 
+if (tipo === "AMPLIADA_BLACKOUT_NEGRO") {
+  color.style.display = "none";
+  colorLibre.style.display = "block";
+  colorLibre.value = "Negro";
+  colorLibre.readOnly = true;
+
+} else if (tipo.startsWith("AMPLIADA_")) {
+  color.style.display = "none";
+  colorLibre.style.display = "block";
+  colorLibre.value = "";
+  colorLibre.readOnly = false;
+
+} else {
+  color.style.display = "block";
+  colorLibre.style.display = "none";
+  colorLibre.value = "";
+  colorLibre.readOnly = false;
+}
   color.innerHTML = '<option value="">Seleccionar</option>';
 
   if (tipo === "BLACKOUT_PREMIUM") {
@@ -1607,8 +1639,12 @@ if (altoNumero > 3.50) {
   const tipoTela =
     document.getElementById("tipoTelaBandas").value;
 
-  const color =
-    document.getElementById("colorBandas").value;
+const color =
+  tipoTela === "AMPLIADA_BLACKOUT_NEGRO"
+    ? "Negro"
+    : tipoTela.startsWith("AMPLIADA_")
+      ? document.getElementById("colorColeccionAmpliadaBandas").value.trim()
+      : document.getElementById("colorBandas").value;
 
   const soporte =
     document.getElementById("soporteBandas").value;
@@ -1639,7 +1675,7 @@ if (altoNumero > 3.50) {
     categoria: "BANDAS",
     clienteObra: clienteObra,
     tipoTela: textoSeleccionado("tipoTelaBandas"),
-    color: textoSeleccionado("colorBandas"),
+    color: color,
     mecanismo: "A cordón",
     soporte: textoSeleccionado("soporteBandas"),
     apertura: textoSeleccionado("aperturaBandas"),
