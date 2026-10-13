@@ -707,19 +707,19 @@
           withFailureHandler: function(fn) {
             failureCb = fn;
             return runner;
-          },
-          calcularPrecio: function(mecanismo, ancho, alto, dobleSistema, cliente) {
-            executeCall(
-              "calcularPrecio",
-              [
-                mecanismo,
-                ancho,
-                alto,
-                dobleSistema,
-                cliente || obtenerCodigoClienteActual()
-              ]
-            );
-          },
+calcularPrecio: function(mecanismo, ancho, alto, dobleSistema, cliente, tipoTela) {
+  executeCall(
+    "calcularPrecio",
+    [
+      mecanismo,
+      ancho,
+      alto,
+      dobleSistema,
+      cliente || obtenerCodigoClienteActual(),
+      tipoTela
+    ]
+  );
+},
           calcularPrecioBandas: function(ancho, alto, soporte, cliente) {
   executeCall(
     "calcularPrecioBandas",
