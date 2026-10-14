@@ -1588,6 +1588,11 @@ if (altoNumero > 3.50) {
     function actualizarColoresBandas() {
   const tipo = document.getElementById("tipoTelaBandas").value;
   const color = document.getElementById("colorBandas");
+      const aviso = document.getElementById("avisoColeccionAmpliadaBandas");
+
+aviso.style.display = tipo.startsWith("AMPLIADA_")
+  ? "block"
+  : "none";
 const colorLibre = document.getElementById("colorColeccionAmpliadaBandas");
 
 if (tipo === "AMPLIADA_BLACKOUT_NEGRO") {
